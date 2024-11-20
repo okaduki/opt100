@@ -1,0 +1,9 @@
+[submodule "opt100"]
+	path = opt100
+	url = https://github.com/espeon011/opt100
+[submodule "espeon011_opt100"]
+	path = espeon011_opt100
+	url = https://github.com/espeon011/opt100
+[submodule "ohken322_opt100"]
+	path = ohken322_opt100
+	url = https://github.com/ohken322/opt100.git
