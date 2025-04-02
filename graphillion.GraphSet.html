@@ -1,0 +1,2163 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN">
+<html><head><title>Python: class GraphSet</title>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+</head><body bgcolor="#f0f0f8">
+<p>
+<table width="100%" cellspacing=0 cellpadding=2 border=0 summary="section">
+<tr bgcolor="#ffc8d8">
+<td colspan=3 valign=bottom>&nbsp;<br>
+<font color="#000000" face="helvetica, arial"><strong>graphillion.GraphSet</strong> = <a name="graphillion.GraphSet">class GraphSet</a>(<a href="builtins.html#object">builtins.object</a>)</font></td></tr>
+    
+<tr bgcolor="#ffc8d8"><td rowspan=2><tt>&nbsp;&nbsp;&nbsp;</tt></td>
+<td colspan=2><tt>graphillion.GraphSet(graphset_or_constraints=None)<br>
+&nbsp;<br>
+Represents&nbsp;and&nbsp;manipulates&nbsp;a&nbsp;set&nbsp;of&nbsp;graphs.<br>
+&nbsp;<br>
+A&nbsp;GraphSet&nbsp;object&nbsp;stores&nbsp;a&nbsp;set&nbsp;of&nbsp;graphs.&nbsp;&nbsp;A&nbsp;graph&nbsp;stored&nbsp;must&nbsp;be<br>
+a&nbsp;subgraph&nbsp;of&nbsp;the&nbsp;universal&nbsp;graph,&nbsp;and&nbsp;is&nbsp;represented&nbsp;by&nbsp;a&nbsp;list&nbsp;of<br>
+edges&nbsp;in&nbsp;the&nbsp;universal&nbsp;graph.&nbsp;&nbsp;An&nbsp;edge&nbsp;is&nbsp;a&nbsp;tuple&nbsp;of&nbsp;two&nbsp;vertices,<br>
+and&nbsp;a&nbsp;vertex&nbsp;can&nbsp;be&nbsp;any&nbsp;hashable&nbsp;object&nbsp;like&nbsp;a&nbsp;number,&nbsp;a&nbsp;text<br>
+string,&nbsp;and&nbsp;a&nbsp;tuple.&nbsp;&nbsp;Currently,&nbsp;GraphSet&nbsp;only&nbsp;supports&nbsp;undirected<br>
+graphs&nbsp;without&nbsp;edge&nbsp;labels.<br>
+&nbsp;<br>
+The&nbsp;universal&nbsp;graph&nbsp;must&nbsp;be&nbsp;defined&nbsp;before&nbsp;creating&nbsp;GraphSet<br>
+objects&nbsp;by&nbsp;`GraphSet.<a href="#graphillion.GraphSet-universe">universe</a>()`&nbsp;method.<br>
+&nbsp;<br>
+Like&nbsp;Python&nbsp;set&nbsp;types,&nbsp;GraphSet&nbsp;supports&nbsp;`graph&nbsp;in&nbsp;graphset`,<br>
+`<a href="#graphillion.GraphSet-len">len</a>(graphset)`,&nbsp;and&nbsp;`for&nbsp;graph&nbsp;in&nbsp;graphset`.&nbsp;&nbsp;It&nbsp;also&nbsp;supports<br>
+all&nbsp;set&nbsp;methods&nbsp;and&nbsp;operators,<br>
+*&nbsp;<a href="#graphillion.GraphSet-isdisjoint">isdisjoint</a>(),&nbsp;<a href="#graphillion.GraphSet-issubset">issubset</a>(),&nbsp;<a href="#graphillion.GraphSet-issuperset">issuperset</a>(),&nbsp;<a href="#graphillion.GraphSet-union">union</a>(),&nbsp;<a href="#graphillion.GraphSet-intersection">intersection</a>(),<br>
+&nbsp;&nbsp;<a href="#graphillion.GraphSet-difference">difference</a>(),&nbsp;<a href="#graphillion.GraphSet-symmetric_difference">symmetric_difference</a>(),&nbsp;<a href="#graphillion.GraphSet-copy">copy</a>(),&nbsp;<a href="#graphillion.GraphSet-update">update</a>(),<br>
+&nbsp;&nbsp;<a href="#graphillion.GraphSet-intersection_update">intersection_update</a>(),&nbsp;<a href="#graphillion.GraphSet-difference_update">difference_update</a>(),<br>
+&nbsp;&nbsp;<a href="#graphillion.GraphSet-symmetric_difference_update">symmetric_difference_update</a>(),&nbsp;<a href="#graphillion.GraphSet-add">add</a>(),&nbsp;<a href="#graphillion.GraphSet-remove">remove</a>(),&nbsp;<a href="#graphillion.GraphSet-discard">discard</a>(),<br>
+&nbsp;&nbsp;<a href="#graphillion.GraphSet-pop">pop</a>(),&nbsp;<a href="#graphillion.GraphSet-clear">clear</a>(),<br>
+*&nbsp;==,&nbsp;!=,&nbsp;&lt;=,&nbsp;&lt;,&nbsp;&gt;=,&nbsp;&gt;,&nbsp;|,&nbsp;&amp;,&nbsp;-,&nbsp;^,&nbsp;|=,&nbsp;&amp;=,&nbsp;-=,&nbsp;^=.<br>
+&nbsp;<br>
+Examples:<br>
+&nbsp;&nbsp;&gt;&gt;&gt;&nbsp;from&nbsp;graphillion&nbsp;import&nbsp;GraphSet<br>
+&nbsp;<br>
+&nbsp;&nbsp;We&nbsp;assume&nbsp;the&nbsp;following&nbsp;graph&nbsp;and&nbsp;register&nbsp;the&nbsp;edge&nbsp;list&nbsp;as&nbsp;the<br>
+&nbsp;&nbsp;universe.<br>
+&nbsp;<br>
+&nbsp;&nbsp;1&nbsp;---&nbsp;2&nbsp;---&nbsp;3<br>
+&nbsp;&nbsp;|&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;|&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;|<br>
+&nbsp;&nbsp;4&nbsp;---&nbsp;5&nbsp;---&nbsp;6<br>
+&nbsp;<br>
+&nbsp;&nbsp;&gt;&gt;&gt;&nbsp;universe&nbsp;=&nbsp;[(1,&nbsp;2),&nbsp;(1,&nbsp;4),&nbsp;(2,&nbsp;3),&nbsp;(2,&nbsp;5),&nbsp;(3,&nbsp;6),&nbsp;(4,&nbsp;5),&nbsp;(5,&nbsp;6)]<br>
+&nbsp;&nbsp;&gt;&gt;&gt;&nbsp;GraphSet.<a href="#graphillion.GraphSet-set_universe">set_universe</a>(universe)<br>
+&nbsp;<br>
+&nbsp;&nbsp;Find&nbsp;all&nbsp;paths&nbsp;from&nbsp;1&nbsp;to&nbsp;6&nbsp;and&nbsp;count&nbsp;them.<br>
+&nbsp;<br>
+&nbsp;&nbsp;&gt;&gt;&gt;&nbsp;paths&nbsp;=&nbsp;GraphSet.<a href="#graphillion.GraphSet-paths">paths</a>(1,&nbsp;6)<br>
+&nbsp;&nbsp;&gt;&gt;&gt;&nbsp;<a href="#graphillion.GraphSet-len">len</a>(paths)<br>
+&nbsp;&nbsp;4<br>
+&nbsp;<br>
+&nbsp;&nbsp;Give&nbsp;constraints&nbsp;in&nbsp;which&nbsp;edge&nbsp;1-4&nbsp;must&nbsp;not&nbsp;be&nbsp;passed&nbsp;but&nbsp;2&nbsp;must<br>
+&nbsp;&nbsp;be&nbsp;passed,&nbsp;and&nbsp;show&nbsp;the&nbsp;paths&nbsp;that&nbsp;meet&nbsp;the&nbsp;constraints.<br>
+&nbsp;<br>
+&nbsp;&nbsp;&gt;&gt;&gt;&nbsp;paths&nbsp;=&nbsp;paths.<a href="#graphillion.GraphSet-excluding">excluding</a>((1,&nbsp;4)).<a href="#graphillion.GraphSet-including">including</a>(2)<br>
+&nbsp;&nbsp;&gt;&gt;&gt;&nbsp;for&nbsp;path&nbsp;in&nbsp;paths:<br>
+&nbsp;&nbsp;...&nbsp;&nbsp;&nbsp;path<br>
+&nbsp;&nbsp;[(1,&nbsp;2),&nbsp;(2,&nbsp;3),&nbsp;(3,&nbsp;6)]<br>
+&nbsp;&nbsp;[(1,&nbsp;2),&nbsp;(2,&nbsp;5),&nbsp;(5,&nbsp;6)]<br>&nbsp;</tt></td></tr>
+<tr><td>&nbsp;</td>
+<td width="100%">Methods defined here:<br>
+<dl><dt><a name="GraphSet-__and__"><strong>__and__</strong></a> = <a href="#GraphSet-intersection">intersection</a>(self, *others)</dt></dl>
+
+<dl><dt><a name="GraphSet-__contains__"><strong>__contains__</strong></a>(self, obj)</dt><dd><tt>Returns&nbsp;True&nbsp;if&nbsp;`obj`&nbsp;is&nbsp;in&nbsp;the&nbsp;`self`,&nbsp;False&nbsp;otherwise.<br>
+&nbsp;<br>
+Use&nbsp;the&nbsp;expression&nbsp;`obj&nbsp;in&nbsp;gs`.<br>
+&nbsp;<br>
+Examples:<br>
+&nbsp;&nbsp;&gt;&gt;&gt;&nbsp;graph1&nbsp;=&nbsp;[(1,&nbsp;2),&nbsp;(1,&nbsp;4)]<br>
+&nbsp;&nbsp;&gt;&gt;&gt;&nbsp;graph2&nbsp;=&nbsp;[(2,&nbsp;3)]<br>
+&nbsp;&nbsp;&gt;&gt;&gt;&nbsp;gs&nbsp;=&nbsp;GraphSet([graph1,&nbsp;graph2])<br>
+&nbsp;&nbsp;&gt;&gt;&gt;&nbsp;graph1&nbsp;in&nbsp;gs<br>
+&nbsp;&nbsp;True<br>
+&nbsp;<br>
+Args:<br>
+&nbsp;&nbsp;obj:&nbsp;A&nbsp;graph&nbsp;(an&nbsp;edge&nbsp;list),&nbsp;an&nbsp;edge,&nbsp;or&nbsp;a&nbsp;vertex&nbsp;in&nbsp;the<br>
+&nbsp;&nbsp;&nbsp;&nbsp;universe.<br>
+&nbsp;<br>
+Returns:<br>
+&nbsp;&nbsp;True&nbsp;or&nbsp;False.<br>
+&nbsp;<br>
+Raises:<br>
+&nbsp;&nbsp;KeyError:&nbsp;If&nbsp;the&nbsp;given&nbsp;object&nbsp;is&nbsp;not&nbsp;found&nbsp;in&nbsp;the&nbsp;universe.</tt></dd></dl>
+
+<dl><dt><a name="GraphSet-__div__"><strong>__div__</strong></a> = <a href="#GraphSet-quotient">quotient</a>(self, other)</dt></dl>
+
+<dl><dt><a name="GraphSet-__eq__"><strong>__eq__</strong></a>(self, other)</dt><dd><tt>Return&nbsp;self==value.</tt></dd></dl>
+
+<dl><dt><a name="GraphSet-__floordiv__"><strong>__floordiv__</strong></a> = <a href="#GraphSet-quotient">quotient</a>(self, other)</dt></dl>
+
+<dl><dt><a name="GraphSet-__ge__"><strong>__ge__</strong></a> = <a href="#GraphSet-issuperset">issuperset</a>(self, other)</dt></dl>
+
+<dl><dt><a name="GraphSet-__gt__"><strong>__gt__</strong></a>(self, other)</dt><dd><tt>Test&nbsp;if&nbsp;`self`&nbsp;is&nbsp;a&nbsp;true&nbsp;superset&nbsp;of&nbsp;`other`.<br>
+&nbsp;<br>
+This&nbsp;method&nbsp;returns&nbsp;False&nbsp;when&nbsp;`self`&nbsp;==&nbsp;`other`,&nbsp;unlike<br>
+issuperset.<br>
+&nbsp;<br>
+Examples:<br>
+&nbsp;&nbsp;&gt;&gt;&gt;&nbsp;gs&nbsp;&gt;&nbsp;gs<br>
+&nbsp;&nbsp;False<br>
+&nbsp;<br>
+Returns:<br>
+&nbsp;&nbsp;True&nbsp;or&nbsp;False.<br>
+&nbsp;<br>
+See&nbsp;Also:<br>
+&nbsp;&nbsp;<a href="#graphillion.GraphSet-issubset">issubset</a>(),&nbsp;<a href="#graphillion.GraphSet-issuperset">issuperset</a>(),&nbsp;<a href="#graphillion.GraphSet-isdisjoint">isdisjoint</a>()</tt></dd></dl>
+
+<dl><dt><a name="GraphSet-__iand__"><strong>__iand__</strong></a> = <a href="#GraphSet-intersection_update">intersection_update</a>(self, *others)</dt></dl>
+
+<dl><dt><a name="GraphSet-__idiv__"><strong>__idiv__</strong></a> = <a href="#GraphSet-quotient_update">quotient_update</a>(self, other)</dt></dl>
+
+<dl><dt><a name="GraphSet-__ifloordiv__"><strong>__ifloordiv__</strong></a> = <a href="#GraphSet-quotient_update">quotient_update</a>(self, other)</dt></dl>
+
+<dl><dt><a name="GraphSet-__imod__"><strong>__imod__</strong></a> = <a href="#GraphSet-remainder_update">remainder_update</a>(self, other)</dt></dl>
+
+<dl><dt><a name="GraphSet-__init__"><strong>__init__</strong></a>(self, graphset_or_constraints=None)</dt><dd><tt>Initializes&nbsp;a&nbsp;GraphSet&nbsp;object&nbsp;with&nbsp;a&nbsp;set&nbsp;of&nbsp;graphs&nbsp;or&nbsp;constraints.<br>
+&nbsp;<br>
+Examples:<br>
+&nbsp;&nbsp;&gt;&gt;&gt;&nbsp;graph1&nbsp;=&nbsp;[(1,&nbsp;4)]<br>
+&nbsp;&nbsp;&gt;&gt;&gt;&nbsp;graph2&nbsp;=&nbsp;[(1,&nbsp;2),&nbsp;(2,&nbsp;3)]<br>
+&nbsp;&nbsp;&gt;&gt;&gt;&nbsp;GraphSet([graph1,&nbsp;graph2])<br>
+&nbsp;&nbsp;GraphSet([[(1,&nbsp;4)],&nbsp;[(1,&nbsp;2),&nbsp;(2,&nbsp;3)]])<br>
+&nbsp;&nbsp;&gt;&gt;&gt;&nbsp;GraphSet({'include':&nbsp;graph1,&nbsp;'exclude':&nbsp;graph2})<br>
+&nbsp;&nbsp;GraphSet([[(1,&nbsp;4)],&nbsp;[(1,&nbsp;4),&nbsp;(2,&nbsp;5)],&nbsp;[(1,&nbsp;4),&nbsp;(3,&nbsp;6)],&nbsp;...<br>
+&nbsp;<br>
+Args:<br>
+&nbsp;&nbsp;graphset_or_constraints:&nbsp;A&nbsp;set&nbsp;of&nbsp;graphs&nbsp;represented&nbsp;by&nbsp;a<br>
+&nbsp;&nbsp;&nbsp;&nbsp;list&nbsp;of&nbsp;graphs&nbsp;(a&nbsp;list&nbsp;of&nbsp;edge&nbsp;lists):<br>
+&nbsp;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;[[(1,&nbsp;4)],&nbsp;[(1,&nbsp;2),&nbsp;(2,&nbsp;3)]]<br>
+&nbsp;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;Or&nbsp;constraints&nbsp;represented&nbsp;by&nbsp;a&nbsp;dict&nbsp;of&nbsp;included&nbsp;or<br>
+&nbsp;&nbsp;&nbsp;&nbsp;excluded&nbsp;edge&nbsp;lists&nbsp;(not-specified&nbsp;edges&nbsp;are&nbsp;not&nbsp;cared):<br>
+&nbsp;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;{'include':&nbsp;[(1,&nbsp;4)],&nbsp;'exclude':&nbsp;[(1,&nbsp;2),&nbsp;(2,&nbsp;3)]}<br>
+&nbsp;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;If&nbsp;no&nbsp;argument&nbsp;is&nbsp;given,&nbsp;it&nbsp;is&nbsp;treated&nbsp;as&nbsp;an&nbsp;empty&nbsp;list<br>
+&nbsp;&nbsp;&nbsp;&nbsp;`[]`&nbsp;and&nbsp;an&nbsp;empty&nbsp;GraphSet&nbsp;is&nbsp;returned.&nbsp;&nbsp;An&nbsp;empty&nbsp;dict<br>
+&nbsp;&nbsp;&nbsp;&nbsp;`{}`&nbsp;means&nbsp;that&nbsp;no&nbsp;constraint&nbsp;is&nbsp;specified,&nbsp;and&nbsp;so&nbsp;a<br>
+&nbsp;&nbsp;&nbsp;&nbsp;GraphSet&nbsp;including&nbsp;all&nbsp;possible&nbsp;graphs&nbsp;in&nbsp;the&nbsp;universe&nbsp;is<br>
+&nbsp;&nbsp;&nbsp;&nbsp;returned&nbsp;(let&nbsp;N&nbsp;the&nbsp;number&nbsp;of&nbsp;edges&nbsp;in&nbsp;the&nbsp;universe,&nbsp;2^N<br>
+&nbsp;&nbsp;&nbsp;&nbsp;graphs&nbsp;are&nbsp;stored&nbsp;in&nbsp;the&nbsp;new&nbsp;object).<br>
+&nbsp;<br>
+Raises:<br>
+&nbsp;&nbsp;KeyError:&nbsp;If&nbsp;given&nbsp;edges&nbsp;are&nbsp;not&nbsp;found&nbsp;in&nbsp;the&nbsp;universe.<br>
+&nbsp;<br>
+See&nbsp;Also:<br>
+&nbsp;&nbsp;<a href="#graphillion.GraphSet-copy">copy</a>()</tt></dd></dl>
+
+<dl><dt><a name="GraphSet-__invert__"><strong>__invert__</strong></a>(self)</dt><dd><tt>Returns&nbsp;a&nbsp;new&nbsp;GraphSet&nbsp;with&nbsp;graphs&nbsp;not&nbsp;stored&nbsp;in&nbsp;`self`.<br>
+&nbsp;<br>
+Examples:<br>
+&nbsp;&nbsp;&gt;&gt;&gt;&nbsp;GraphSet.<a href="#graphillion.GraphSet-set_universe">set_universe</a>([(1,&nbsp;2),&nbsp;(1,&nbsp;4)])<br>
+&nbsp;&nbsp;&gt;&gt;&gt;&nbsp;graph&nbsp;=&nbsp;[(1,&nbsp;2)]<br>
+&nbsp;&nbsp;&gt;&gt;&gt;&nbsp;gs&nbsp;=&nbsp;GraphSet([graph])<br>
+&nbsp;&nbsp;&gt;&gt;&gt;&nbsp;~gs<br>
+&nbsp;&nbsp;GraphSet([[],&nbsp;[(1,&nbsp;4)],&nbsp;[(1,&nbsp;2),&nbsp;(1,&nbsp;4)]])<br>
+&nbsp;<br>
+Returns:<br>
+&nbsp;&nbsp;A&nbsp;new&nbsp;GraphSet&nbsp;object.</tt></dd></dl>
+
+<dl><dt><a name="GraphSet-__ior__"><strong>__ior__</strong></a> = <a href="#GraphSet-update">update</a>(self, *others)</dt></dl>
+
+<dl><dt><a name="GraphSet-__isub__"><strong>__isub__</strong></a> = <a href="#GraphSet-difference_update">difference_update</a>(self, *others)</dt></dl>
+
+<dl><dt><a name="GraphSet-__iter__"><strong>__iter__</strong></a>(self)</dt><dd><tt>Iterates&nbsp;over&nbsp;graphs.<br>
+&nbsp;<br>
+This&nbsp;is&nbsp;the&nbsp;fastest&nbsp;iterator&nbsp;among&nbsp;Graphset&nbsp;iterators,&nbsp;such&nbsp;as<br>
+<a href="#graphillion.GraphSet-rand_iter">rand_iter</a>()&nbsp;and&nbsp;<a href="#graphillion.GraphSet-max_iter">max_iter</a>().<br>
+&nbsp;<br>
+Examples:<br>
+&nbsp;&nbsp;&gt;&gt;&gt;&nbsp;graph1&nbsp;=&nbsp;[(1,&nbsp;2)]<br>
+&nbsp;&nbsp;&gt;&gt;&gt;&nbsp;graph2&nbsp;=&nbsp;[(1,&nbsp;2),&nbsp;(1,&nbsp;4)]<br>
+&nbsp;&nbsp;&gt;&gt;&gt;&nbsp;gs&nbsp;=&nbsp;GraphSet([graph1,&nbsp;graph2])<br>
+&nbsp;&nbsp;&gt;&gt;&gt;&nbsp;for&nbsp;g&nbsp;in&nbsp;gs:<br>
+&nbsp;&nbsp;...&nbsp;&nbsp;&nbsp;g<br>
+&nbsp;&nbsp;[(1,&nbsp;2),&nbsp;(1,&nbsp;4)]<br>
+&nbsp;&nbsp;[(1,&nbsp;2)]<br>
+&nbsp;<br>
+Returns:<br>
+&nbsp;&nbsp;A&nbsp;generator.<br>
+&nbsp;<br>
+Yields:<br>
+&nbsp;&nbsp;A&nbsp;graph.<br>
+&nbsp;<br>
+See&nbsp;Also:<br>
+&nbsp;&nbsp;<a href="#graphillion.GraphSet-rand_iter">rand_iter</a>(),&nbsp;<a href="#graphillion.GraphSet-max_iter">max_iter</a>(),&nbsp;<a href="#graphillion.GraphSet-min_iter">min_iter</a>()</tt></dd></dl>
+
+<dl><dt><a name="GraphSet-__itruediv__"><strong>__itruediv__</strong></a> = <a href="#GraphSet-quotient_update">quotient_update</a>(self, other)</dt></dl>
+
+<dl><dt><a name="GraphSet-__ixor__"><strong>__ixor__</strong></a> = <a href="#GraphSet-symmetric_difference_update">symmetric_difference_update</a>(self, *others)</dt></dl>
+
+<dl><dt><a name="GraphSet-__le__"><strong>__le__</strong></a> = <a href="#GraphSet-issubset">issubset</a>(self, other)</dt></dl>
+
+<dl><dt><a name="GraphSet-__len__"><strong>__len__</strong></a>(self)</dt><dd><tt>Returns&nbsp;the&nbsp;number&nbsp;of&nbsp;graphs&nbsp;in&nbsp;`self`.<br>
+&nbsp;<br>
+Use&nbsp;gs.<a href="#graphillion.GraphSet-len">len</a>()&nbsp;if&nbsp;OverflowError&nbsp;raised.<br>
+&nbsp;<br>
+Examples:<br>
+&nbsp;&nbsp;&gt;&gt;&gt;&nbsp;gs&nbsp;=&nbsp;GraphSet([graph1,&nbsp;graph2])<br>
+&nbsp;&nbsp;&gt;&gt;&gt;&nbsp;<a href="#graphillion.GraphSet-len">len</a>(gs)<br>
+&nbsp;&nbsp;2<br>
+&nbsp;<br>
+Returns:<br>
+&nbsp;&nbsp;The&nbsp;number&nbsp;of&nbsp;graphs.<br>
+&nbsp;<br>
+Raises:<br>
+&nbsp;&nbsp;OverflowError<br>
+&nbsp;<br>
+See&nbsp;Also:<br>
+&nbsp;&nbsp;<a href="#graphillion.GraphSet-len">len</a>()</tt></dd></dl>
+
+<dl><dt><a name="GraphSet-__lt__"><strong>__lt__</strong></a>(self, other)</dt><dd><tt>Tests&nbsp;if&nbsp;`self`&nbsp;is&nbsp;a&nbsp;true&nbsp;subset&nbsp;of&nbsp;`other`.<br>
+&nbsp;<br>
+This&nbsp;method&nbsp;returns&nbsp;False&nbsp;when&nbsp;`self`&nbsp;==&nbsp;`other`,&nbsp;unlike<br>
+issubset.<br>
+&nbsp;<br>
+Examples:<br>
+&nbsp;&nbsp;&gt;&gt;&gt;&nbsp;gs&nbsp;&lt;&nbsp;gs<br>
+&nbsp;&nbsp;False<br>
+&nbsp;<br>
+Returns:<br>
+&nbsp;&nbsp;True&nbsp;or&nbsp;False.<br>
+&nbsp;<br>
+See&nbsp;Also:<br>
+&nbsp;&nbsp;<a href="#graphillion.GraphSet-issubset">issubset</a>(),&nbsp;<a href="#graphillion.GraphSet-issuperset">issuperset</a>(),&nbsp;<a href="#graphillion.GraphSet-isdisjoint">isdisjoint</a>()</tt></dd></dl>
+
+<dl><dt><a name="GraphSet-__mod__"><strong>__mod__</strong></a> = <a href="#GraphSet-remainder">remainder</a>(self, other)</dt></dl>
+
+<dl><dt><a name="GraphSet-__ne__"><strong>__ne__</strong></a>(self, other)</dt><dd><tt>Return&nbsp;self!=value.</tt></dd></dl>
+
+<dl><dt><a name="GraphSet-__nonzero__"><strong>__nonzero__</strong></a>(self)</dt></dl>
+
+<dl><dt><a name="GraphSet-__or__"><strong>__or__</strong></a> = <a href="#GraphSet-union">union</a>(self, *others)</dt></dl>
+
+<dl><dt><a name="GraphSet-__repr__"><strong>__repr__</strong></a>(self)</dt><dd><tt>Return&nbsp;repr(self).</tt></dd></dl>
+
+<dl><dt><a name="GraphSet-__sub__"><strong>__sub__</strong></a> = <a href="#GraphSet-difference">difference</a>(self, *others)</dt></dl>
+
+<dl><dt><a name="GraphSet-__truediv__"><strong>__truediv__</strong></a> = <a href="#GraphSet-quotient">quotient</a>(self, other)</dt></dl>
+
+<dl><dt><a name="GraphSet-__xor__"><strong>__xor__</strong></a> = <a href="#GraphSet-symmetric_difference">symmetric_difference</a>(self, *others)</dt></dl>
+
+<dl><dt><a name="GraphSet-add"><strong>add</strong></a>(self, graph_or_edge)</dt><dd><tt>Adds&nbsp;a&nbsp;given&nbsp;graph&nbsp;or&nbsp;edge&nbsp;to&nbsp;`self`.<br>
+&nbsp;<br>
+If&nbsp;a&nbsp;graph&nbsp;is&nbsp;given,&nbsp;the&nbsp;graph&nbsp;is&nbsp;just&nbsp;added&nbsp;to&nbsp;`self`<br>
+GraphSet.&nbsp;&nbsp;If&nbsp;an&nbsp;edge&nbsp;is&nbsp;given,&nbsp;the&nbsp;edge&nbsp;is&nbsp;grafted&nbsp;to&nbsp;all&nbsp;the<br>
+graphs&nbsp;in&nbsp;`self`.&nbsp;&nbsp;The&nbsp;`self`&nbsp;will&nbsp;be&nbsp;changed.<br>
+&nbsp;<br>
+Examples:<br>
+&nbsp;&nbsp;&gt;&gt;&gt;&nbsp;graph1&nbsp;=&nbsp;[(1,&nbsp;2),&nbsp;(1,&nbsp;4)]<br>
+&nbsp;&nbsp;&gt;&gt;&gt;&nbsp;graph2&nbsp;=&nbsp;[(2,&nbsp;3)]<br>
+&nbsp;&nbsp;&gt;&gt;&gt;&nbsp;gs&nbsp;=&nbsp;GraphSet([graph1,&nbsp;graph2])<br>
+&nbsp;&nbsp;&gt;&gt;&gt;&nbsp;edge&nbsp;=&nbsp;(1,&nbsp;2)<br>
+&nbsp;&nbsp;&gt;&gt;&gt;&nbsp;gs.<a href="#graphillion.GraphSet-add">add</a>(edge)<br>
+&nbsp;&nbsp;&gt;&gt;&gt;&nbsp;gs<br>
+&nbsp;&nbsp;GraphSet([[(1,&nbsp;2),&nbsp;(1,&nbsp;4)],&nbsp;[(1,&nbsp;2),&nbsp;(2,&nbsp;3)]])<br>
+&nbsp;<br>
+Args:<br>
+&nbsp;&nbsp;graph_or_edge:&nbsp;A&nbsp;graph&nbsp;(an&nbsp;edge&nbsp;list)&nbsp;or&nbsp;an&nbsp;edge&nbsp;in&nbsp;the<br>
+&nbsp;&nbsp;&nbsp;&nbsp;universe.<br>
+&nbsp;<br>
+Returns:<br>
+&nbsp;&nbsp;None.<br>
+&nbsp;<br>
+Raises:<br>
+&nbsp;&nbsp;KeyError:&nbsp;If&nbsp;a&nbsp;given&nbsp;edge&nbsp;or&nbsp;vertex&nbsp;is&nbsp;not&nbsp;found&nbsp;in&nbsp;the<br>
+&nbsp;&nbsp;&nbsp;&nbsp;universe.<br>
+&nbsp;<br>
+See&nbsp;Also:<br>
+&nbsp;&nbsp;<a href="#graphillion.GraphSet-remove">remove</a>(),&nbsp;<a href="#graphillion.GraphSet-discard">discard</a>()</tt></dd></dl>
+
+<dl><dt><a name="GraphSet-add_some_edge"><strong>add_some_edge</strong></a>(self)</dt><dd><tt>Returns&nbsp;a&nbsp;new&nbsp;GraphSet&nbsp;with&nbsp;graphs&nbsp;that&nbsp;are&nbsp;obtained&nbsp;by&nbsp;adding&nbsp;some&nbsp;edge&nbsp;to&nbsp;a&nbsp;graph&nbsp;in&nbsp;`self`.<br>
+&nbsp;<br>
+The&nbsp;`self`&nbsp;is&nbsp;not&nbsp;changed.<br>
+&nbsp;<br>
+Examples:<br>
+&nbsp;&nbsp;&gt;&gt;&gt;&nbsp;GraphSet.<a href="#graphillion.GraphSet-set_universe">set_universe</a>([(1,&nbsp;2),&nbsp;(1,&nbsp;4),&nbsp;(2,&nbsp;3)])<br>
+&nbsp;&nbsp;&gt;&gt;&gt;&nbsp;graph1&nbsp;=&nbsp;[(1,&nbsp;2),&nbsp;(1,&nbsp;4)]<br>
+&nbsp;&nbsp;&gt;&gt;&gt;&nbsp;graph2&nbsp;=&nbsp;[(2,&nbsp;3)]<br>
+&nbsp;&nbsp;&gt;&gt;&gt;&nbsp;gs&nbsp;=&nbsp;GraphSet([graph1,&nbsp;graph2])<br>
+&nbsp;&nbsp;&gt;&gt;&gt;&nbsp;gs.<a href="#graphillion.GraphSet-add_some_edge">add_some_edge</a>()<br>
+&nbsp;&nbsp;GraphSet([[(1,&nbsp;4),&nbsp;(2,&nbsp;3)],&nbsp;[(1,&nbsp;2),&nbsp;(2,&nbsp;3)],&nbsp;[(1,&nbsp;2),&nbsp;(1,&nbsp;4),&nbsp;(2,&nbsp;3)]])<br>
+&nbsp;<br>
+Returns:<br>
+&nbsp;&nbsp;A&nbsp;new&nbsp;GraphSet&nbsp;object.</tt></dd></dl>
+
+<dl><dt><a name="GraphSet-blocking"><strong>blocking</strong></a>(self)</dt><dd><tt>Returns&nbsp;a&nbsp;new&nbsp;GraphSet&nbsp;of&nbsp;all&nbsp;blocking&nbsp;(hitting)&nbsp;sets.<br>
+&nbsp;<br>
+A&nbsp;blocking&nbsp;set&nbsp;is&nbsp;often&nbsp;called&nbsp;a&nbsp;hitting&nbsp;set;&nbsp;all&nbsp;graphs&nbsp;in<br>
+`self`&nbsp;contain&nbsp;at&nbsp;least&nbsp;one&nbsp;edge&nbsp;in&nbsp;the&nbsp;set.&nbsp;&nbsp;This&nbsp;implies<br>
+that&nbsp;all&nbsp;the&nbsp;graphs&nbsp;are&nbsp;destroyed&nbsp;by&nbsp;removing&nbsp;edges&nbsp;in&nbsp;the<br>
+set.<br>
+&nbsp;<br>
+The&nbsp;blocking&nbsp;sets&nbsp;are&nbsp;defined&nbsp;by,<br>
+&nbsp;&nbsp;gs.<a href="#graphillion.GraphSet-blocking">blocking</a>()&nbsp;=&nbsp;{a&nbsp;|&nbsp;b&nbsp;\in&nbsp;gs&nbsp;-&gt;&nbsp;a&nbsp;\cap&nbsp;b&nbsp;\neq&nbsp;\empty}.<br>
+T.&nbsp;Toda,&nbsp;Hypergraph&nbsp;Dualization&nbsp;Algorithm&nbsp;Based&nbsp;on&nbsp;Binary<br>
+Decision&nbsp;Diagrams.<br>
+&nbsp;<br>
+The&nbsp;`self`&nbsp;is&nbsp;not&nbsp;changed.<br>
+&nbsp;<br>
+Examples:<br>
+&nbsp;&nbsp;&gt;&gt;&gt;&nbsp;graph1&nbsp;=&nbsp;[(1,&nbsp;2),&nbsp;(1,&nbsp;4)]<br>
+&nbsp;&nbsp;&gt;&gt;&gt;&nbsp;graph2&nbsp;=&nbsp;[(1,&nbsp;4),&nbsp;(2,&nbsp;3)]<br>
+&nbsp;&nbsp;&gt;&gt;&gt;&nbsp;gs&nbsp;=&nbsp;GraphSet([graph1,&nbsp;graph2])<br>
+&nbsp;&nbsp;&gt;&gt;&gt;&nbsp;gs.<a href="#graphillion.GraphSet-blocking">blocking</a>().<a href="#graphillion.GraphSet-minimal">minimal</a>()<br>
+&nbsp;&nbsp;GraphSet([[(1,&nbsp;4)],&nbsp;[(1,&nbsp;2),&nbsp;(2,&nbsp;3)]])<br>
+&nbsp;<br>
+Returns:<br>
+&nbsp;&nbsp;A&nbsp;new&nbsp;GraphSet&nbsp;object.<br>
+&nbsp;<br>
+See&nbsp;Also:<br>
+&nbsp;&nbsp;<a href="#graphillion.GraphSet-minimal">minimal</a>()</tt></dd></dl>
+
+<dl><dt><a name="GraphSet-choice"><strong>choice</strong></a>(self)</dt><dd><tt>Returns&nbsp;an&nbsp;arbitrary&nbsp;graph&nbsp;from&nbsp;`self`.<br>
+&nbsp;<br>
+The&nbsp;`self`&nbsp;is&nbsp;not&nbsp;changed.<br>
+&nbsp;<br>
+Examples:<br>
+&nbsp;&nbsp;&gt;&gt;&gt;&nbsp;graph1&nbsp;=&nbsp;[(1,&nbsp;2),&nbsp;(1,&nbsp;4)]<br>
+&nbsp;&nbsp;&gt;&gt;&gt;&nbsp;graph2&nbsp;=&nbsp;[(2,&nbsp;3)]<br>
+&nbsp;&nbsp;&gt;&gt;&gt;&nbsp;gs&nbsp;=&nbsp;GraphSet([graph1,&nbsp;graph2])<br>
+&nbsp;&nbsp;&gt;&gt;&gt;&nbsp;gs.<a href="#graphillion.GraphSet-choice">choice</a>()<br>
+&nbsp;&nbsp;[(1,&nbsp;2),&nbsp;(1,&nbsp;4)]<br>
+&nbsp;<br>
+Returns:<br>
+&nbsp;&nbsp;A&nbsp;graph.<br>
+&nbsp;<br>
+Raises:<br>
+&nbsp;&nbsp;KeyError:&nbsp;If&nbsp;`self`&nbsp;is&nbsp;empty.<br>
+&nbsp;<br>
+See&nbsp;Also:<br>
+&nbsp;&nbsp;<a href="#graphillion.GraphSet-pop">pop</a>()</tt></dd></dl>
+
+<dl><dt><a name="GraphSet-clear"><strong>clear</strong></a>(self)</dt><dd><tt>Removes&nbsp;all&nbsp;graphs&nbsp;from&nbsp;`self`.<br>
+&nbsp;<br>
+Examples:<br>
+&nbsp;&nbsp;&gt;&gt;&gt;&nbsp;graph1&nbsp;=&nbsp;[(1,&nbsp;2),&nbsp;(1,&nbsp;4)]<br>
+&nbsp;&nbsp;&gt;&gt;&gt;&nbsp;graph2&nbsp;=&nbsp;[(2,&nbsp;3)]<br>
+&nbsp;&nbsp;&gt;&gt;&gt;&nbsp;gs&nbsp;=&nbsp;GraphSet([graph1,&nbsp;graph2])<br>
+&nbsp;&nbsp;&gt;&gt;&gt;&nbsp;gs.<a href="#graphillion.GraphSet-clear">clear</a>()<br>
+&nbsp;&nbsp;&gt;&gt;&gt;&nbsp;gs<br>
+&nbsp;&nbsp;GraphSet([])</tt></dd></dl>
+
+<dl><dt><a name="GraphSet-complement"><strong>complement</strong></a>(self)</dt><dd><tt>Returns&nbsp;a&nbsp;new&nbsp;GraphSet&nbsp;with&nbsp;complement&nbsp;graphs&nbsp;of&nbsp;`self`.<br>
+&nbsp;<br>
+The&nbsp;`self`&nbsp;is&nbsp;not&nbsp;changed.<br>
+&nbsp;<br>
+Examples:<br>
+&nbsp;&nbsp;&gt;&gt;&gt;&nbsp;GraphSet.<a href="#graphillion.GraphSet-set_universe">set_universe</a>([(1,&nbsp;2),&nbsp;(1,&nbsp;4)])<br>
+&nbsp;&nbsp;&gt;&gt;&gt;&nbsp;graph1&nbsp;=&nbsp;[(1,&nbsp;2)]<br>
+&nbsp;&nbsp;&gt;&gt;&gt;&nbsp;graph2&nbsp;=&nbsp;[(1,&nbsp;2),&nbsp;(1,&nbsp;4)]<br>
+&nbsp;&nbsp;&gt;&gt;&gt;&nbsp;gs&nbsp;=&nbsp;GraphSet([graph1,&nbsp;graph2])<br>
+&nbsp;&nbsp;&gt;&gt;&gt;&nbsp;gs.<a href="#graphillion.GraphSet-complement">complement</a>()<br>
+&nbsp;&nbsp;GraphSet([[],&nbsp;[(1,&nbsp;4)]])<br>
+&nbsp;<br>
+Returns:<br>
+&nbsp;&nbsp;A&nbsp;new&nbsp;GraphSet&nbsp;object.</tt></dd></dl>
+
+<dl><dt><a name="GraphSet-copy"><strong>copy</strong></a>(self)</dt><dd><tt>Returns&nbsp;a&nbsp;new&nbsp;GraphSet&nbsp;with&nbsp;a&nbsp;shallow&nbsp;copy&nbsp;of&nbsp;`self`.<br>
+&nbsp;<br>
+Examples:<br>
+&nbsp;&nbsp;&gt;&gt;&gt;&nbsp;gs2&nbsp;=&nbsp;gs1.<a href="#graphillion.GraphSet-copy">copy</a>()<br>
+&nbsp;&nbsp;&gt;&gt;&gt;&nbsp;gs1&nbsp;-=&nbsp;gs2<br>
+&nbsp;&nbsp;&gt;&gt;&gt;&nbsp;gs1&nbsp;==&nbsp;gs2<br>
+&nbsp;&nbsp;False<br>
+&nbsp;<br>
+Returns:<br>
+&nbsp;&nbsp;A&nbsp;new&nbsp;GraphSet&nbsp;object.<br>
+&nbsp;<br>
+See&nbsp;Also:<br>
+&nbsp;&nbsp;<a href="#graphillion.GraphSet-__init__">__init__</a>()</tt></dd></dl>
+
+<dl><dt><a name="GraphSet-cost_eq"><strong>cost_eq</strong></a>(self, costs, cost_bound)</dt><dd><tt>Returns&nbsp;a&nbsp;new&nbsp;GraphSet&nbsp;with&nbsp;subgraphs&nbsp;whose&nbsp;cost&nbsp;is&nbsp;equal&nbsp;to&nbsp;the&nbsp;cost&nbsp;bound.<br>
+&nbsp;<br>
+This&nbsp;method&nbsp;constructs&nbsp;a&nbsp;Graphset&nbsp;of&nbsp;subgraphs<br>
+whose&nbsp;cost&nbsp;is&nbsp;equal&nbsp;to&nbsp;the&nbsp;cost&nbsp;bound,<br>
+where&nbsp;`costs`&nbsp;of&nbsp;each&nbsp;edge&nbsp;and&nbsp;the&nbsp;`cost_bound`&nbsp;are&nbsp;given&nbsp;as&nbsp;arguments.<br>
+&nbsp;<br>
+Examples:<br>
+&nbsp;&nbsp;&gt;&gt;&gt;&nbsp;universe&nbsp;=&nbsp;[(1,&nbsp;2),&nbsp;(1,&nbsp;4),&nbsp;(2,&nbsp;3),&nbsp;(3,&nbsp;4)]<br>
+&nbsp;&nbsp;&gt;&gt;&gt;&nbsp;GraphSet.<a href="#graphillion.GraphSet-set_universe">set_universe</a>(universe)<br>
+&nbsp;<br>
+&nbsp;&nbsp;&gt;&gt;&gt;&nbsp;graph1&nbsp;=&nbsp;[(1,&nbsp;2),&nbsp;(2,&nbsp;3)]<br>
+&nbsp;&nbsp;&gt;&gt;&gt;&nbsp;graph2&nbsp;=&nbsp;[(3,&nbsp;4)]<br>
+&nbsp;&nbsp;&gt;&gt;&gt;&nbsp;graph3&nbsp;=&nbsp;[(1,&nbsp;2),&nbsp;(1,&nbsp;4),&nbsp;(3,&nbsp;4)]<br>
+&nbsp;&nbsp;&gt;&gt;&gt;&nbsp;gs&nbsp;=&nbsp;GraphSet([graph1,&nbsp;graph2,&nbsp;graph3])<br>
+&nbsp;&nbsp;&gt;&gt;&gt;&nbsp;costs&nbsp;=&nbsp;{(1,&nbsp;2):&nbsp;2,&nbsp;(1,&nbsp;4):&nbsp;3,&nbsp;(2,&nbsp;3):&nbsp;1,&nbsp;(3,&nbsp;4):&nbsp;7}<br>
+&nbsp;&nbsp;&gt;&gt;&gt;&nbsp;cost_bound&nbsp;=&nbsp;7<br>
+&nbsp;&nbsp;&gt;&gt;&gt;&nbsp;print(gs.<a href="#graphillion.GraphSet-cost_eq">cost_eq</a>(costs,&nbsp;cost_bound))<br>
+&nbsp;&nbsp;GraphSet([[(3,&nbsp;4)]])<br>
+&nbsp;<br>
+Args:<br>
+&nbsp;&nbsp;costs:&nbsp;A&nbsp;dictionary&nbsp;of&nbsp;the&nbsp;cost&nbsp;of&nbsp;each&nbsp;edge.<br>
+&nbsp;&nbsp;cost_bound:&nbsp;The&nbsp;limit&nbsp;of&nbsp;the&nbsp;cost&nbsp;of&nbsp;each&nbsp;graph.&nbsp;32&nbsp;bit&nbsp;signed&nbsp;integer.<br>
+&nbsp;<br>
+Returns:<br>
+&nbsp;&nbsp;A&nbsp;new&nbsp;GraphSet&nbsp;object.<br>
+&nbsp;<br>
+Raises:<br>
+&nbsp;&nbsp;KeyError:&nbsp;If&nbsp;a&nbsp;given&nbsp;edge&nbsp;is&nbsp;not&nbsp;found&nbsp;in&nbsp;the&nbsp;universe.<br>
+&nbsp;&nbsp;AssertionError:&nbsp;If&nbsp;the&nbsp;cost&nbsp;of&nbsp;at&nbsp;least&nbsp;one&nbsp;edge&nbsp;is&nbsp;not&nbsp;given,&nbsp;or&nbsp;outside&nbsp;the&nbsp;range&nbsp;of&nbsp;32&nbsp;bit&nbsp;signed&nbsp;integer.<br>
+&nbsp;&nbsp;TypeError:&nbsp;If&nbsp;at&nbsp;least&nbsp;one&nbsp;cost&nbsp;is&nbsp;not&nbsp;integer.</tt></dd></dl>
+
+<dl><dt><a name="GraphSet-cost_ge"><strong>cost_ge</strong></a>(self, costs, cost_bound)</dt><dd><tt>Returns&nbsp;a&nbsp;new&nbsp;GraphSet&nbsp;with&nbsp;subgraphs&nbsp;whose&nbsp;cost&nbsp;is&nbsp;greater&nbsp;than&nbsp;or&nbsp;equal&nbsp;to&nbsp;the&nbsp;cost&nbsp;bound.<br>
+&nbsp;<br>
+This&nbsp;method&nbsp;constructs&nbsp;a&nbsp;Graphset&nbsp;of&nbsp;subgraphs<br>
+whose&nbsp;cost&nbsp;is&nbsp;greater&nbsp;than&nbsp;or&nbsp;equal&nbsp;to&nbsp;the&nbsp;cost&nbsp;bound,<br>
+where&nbsp;`costs`&nbsp;of&nbsp;each&nbsp;edge&nbsp;and&nbsp;the&nbsp;`cost_bound`&nbsp;are&nbsp;given&nbsp;as&nbsp;arguments.<br>
+&nbsp;<br>
+Examples:<br>
+&nbsp;&nbsp;&gt;&gt;&gt;&nbsp;universe&nbsp;=&nbsp;[(1,&nbsp;2),&nbsp;(1,&nbsp;4),&nbsp;(2,&nbsp;3),&nbsp;(3,&nbsp;4)]<br>
+&nbsp;&nbsp;&gt;&gt;&gt;&nbsp;GraphSet.<a href="#graphillion.GraphSet-set_universe">set_universe</a>(universe)<br>
+&nbsp;<br>
+&nbsp;&nbsp;&gt;&gt;&gt;&nbsp;graph1&nbsp;=&nbsp;[(1,&nbsp;2),&nbsp;(2,&nbsp;3)]<br>
+&nbsp;&nbsp;&gt;&gt;&gt;&nbsp;graph2&nbsp;=&nbsp;[(3,&nbsp;4)]<br>
+&nbsp;&nbsp;&gt;&gt;&gt;&nbsp;graph3&nbsp;=&nbsp;[(1,&nbsp;2),&nbsp;(1,&nbsp;4),&nbsp;(3,&nbsp;4)]<br>
+&nbsp;&nbsp;&gt;&gt;&gt;&nbsp;gs&nbsp;=&nbsp;GraphSet([graph1,&nbsp;graph2,&nbsp;graph3])<br>
+&nbsp;&nbsp;&gt;&gt;&gt;&nbsp;costs&nbsp;=&nbsp;{(1,&nbsp;2):&nbsp;2,&nbsp;(1,&nbsp;4):&nbsp;3,&nbsp;(2,&nbsp;3):&nbsp;1,&nbsp;(3,&nbsp;4):&nbsp;7}<br>
+&nbsp;&nbsp;&gt;&gt;&gt;&nbsp;cost_bound&nbsp;=&nbsp;7<br>
+&nbsp;&nbsp;&gt;&gt;&gt;&nbsp;print(gs.<a href="#graphillion.GraphSet-cost_ge">cost_ge</a>(costs,&nbsp;cost_bound))<br>
+&nbsp;&nbsp;GraphSet([[(3,&nbsp;4)],&nbsp;[(1,&nbsp;2),&nbsp;(1,&nbsp;4),&nbsp;(3,&nbsp;4)]])<br>
+&nbsp;<br>
+Args:<br>
+&nbsp;&nbsp;costs:&nbsp;A&nbsp;dictionary&nbsp;of&nbsp;the&nbsp;cost&nbsp;of&nbsp;each&nbsp;edge.<br>
+&nbsp;&nbsp;cost_bound:&nbsp;The&nbsp;lower&nbsp;limit&nbsp;of&nbsp;the&nbsp;cost&nbsp;of&nbsp;each&nbsp;graph.&nbsp;32&nbsp;bit&nbsp;signed&nbsp;integer.<br>
+&nbsp;<br>
+Returns:<br>
+&nbsp;&nbsp;A&nbsp;new&nbsp;GraphSet&nbsp;object.<br>
+&nbsp;<br>
+Raises:<br>
+&nbsp;&nbsp;KeyError:&nbsp;If&nbsp;a&nbsp;given&nbsp;edge&nbsp;is&nbsp;not&nbsp;found&nbsp;in&nbsp;the&nbsp;universe.<br>
+&nbsp;&nbsp;AssertionError:&nbsp;If&nbsp;the&nbsp;cost&nbsp;of&nbsp;at&nbsp;least&nbsp;one&nbsp;edge&nbsp;is&nbsp;not&nbsp;given,&nbsp;or&nbsp;outside&nbsp;the&nbsp;range&nbsp;of&nbsp;32&nbsp;bit&nbsp;signed&nbsp;integer.<br>
+&nbsp;&nbsp;TypeError:&nbsp;If&nbsp;at&nbsp;least&nbsp;one&nbsp;cost&nbsp;is&nbsp;not&nbsp;integer.</tt></dd></dl>
+
+<dl><dt><a name="GraphSet-cost_le"><strong>cost_le</strong></a>(self, costs, cost_bound)</dt><dd><tt>Returns&nbsp;a&nbsp;new&nbsp;GraphSet&nbsp;with&nbsp;subgraphs&nbsp;whose&nbsp;cost&nbsp;is&nbsp;less&nbsp;than&nbsp;or&nbsp;equal&nbsp;to&nbsp;the&nbsp;cost&nbsp;bound.<br>
+&nbsp;<br>
+This&nbsp;method&nbsp;constructs&nbsp;a&nbsp;Graphset&nbsp;of&nbsp;subgraphs<br>
+whose&nbsp;cost&nbsp;is&nbsp;less&nbsp;than&nbsp;or&nbsp;equal&nbsp;to&nbsp;the&nbsp;cost&nbsp;bound,<br>
+where&nbsp;`costs`&nbsp;of&nbsp;each&nbsp;edge&nbsp;and&nbsp;the&nbsp;`cost_bound`&nbsp;are&nbsp;given&nbsp;as&nbsp;arguments.<br>
+&nbsp;<br>
+Examples:<br>
+&nbsp;&nbsp;&gt;&gt;&gt;&nbsp;universe&nbsp;=&nbsp;[(1,&nbsp;2),&nbsp;(1,&nbsp;4),&nbsp;(2,&nbsp;3),&nbsp;(3,&nbsp;4)]<br>
+&nbsp;&nbsp;&gt;&gt;&gt;&nbsp;GraphSet.<a href="#graphillion.GraphSet-set_universe">set_universe</a>(universe)<br>
+&nbsp;<br>
+&nbsp;&nbsp;&gt;&gt;&gt;&nbsp;graph1&nbsp;=&nbsp;[(1,&nbsp;2),&nbsp;(2,&nbsp;3)]<br>
+&nbsp;&nbsp;&gt;&gt;&gt;&nbsp;graph2&nbsp;=&nbsp;[(3,&nbsp;4)]<br>
+&nbsp;&nbsp;&gt;&gt;&gt;&nbsp;graph3&nbsp;=&nbsp;[(1,&nbsp;2),&nbsp;(1,&nbsp;4),&nbsp;(3,&nbsp;4)]<br>
+&nbsp;&nbsp;&gt;&gt;&gt;&nbsp;gs&nbsp;=&nbsp;GraphSet([graph1,&nbsp;graph2,&nbsp;graph3])<br>
+&nbsp;&nbsp;&gt;&gt;&gt;&nbsp;costs&nbsp;=&nbsp;{(1,&nbsp;2):&nbsp;2,&nbsp;(1,&nbsp;4):&nbsp;3,&nbsp;(2,&nbsp;3):&nbsp;1,&nbsp;(3,&nbsp;4):&nbsp;7}<br>
+&nbsp;&nbsp;&gt;&gt;&gt;&nbsp;cost_bound&nbsp;=&nbsp;7<br>
+&nbsp;&nbsp;&gt;&gt;&gt;&nbsp;print(gs.<a href="#graphillion.GraphSet-cost_le">cost_le</a>(costs,&nbsp;cost_bound))<br>
+&nbsp;&nbsp;GraphSet([[(3,&nbsp;4)],&nbsp;[(1,&nbsp;2),&nbsp;(2,&nbsp;3)]])<br>
+&nbsp;<br>
+Args:<br>
+&nbsp;&nbsp;costs:&nbsp;A&nbsp;dictionary&nbsp;of&nbsp;the&nbsp;cost&nbsp;of&nbsp;each&nbsp;edge.<br>
+&nbsp;&nbsp;cost_bound:&nbsp;The&nbsp;upper&nbsp;limit&nbsp;of&nbsp;the&nbsp;cost&nbsp;of&nbsp;each&nbsp;graph.&nbsp;32&nbsp;bit&nbsp;signed&nbsp;integer.<br>
+&nbsp;<br>
+Returns:<br>
+&nbsp;&nbsp;A&nbsp;new&nbsp;GraphSet&nbsp;object.<br>
+&nbsp;<br>
+Raises:<br>
+&nbsp;&nbsp;KeyError:&nbsp;If&nbsp;a&nbsp;given&nbsp;edge&nbsp;is&nbsp;not&nbsp;found&nbsp;in&nbsp;the&nbsp;universe.<br>
+&nbsp;&nbsp;AssertionError:&nbsp;If&nbsp;the&nbsp;cost&nbsp;of&nbsp;at&nbsp;least&nbsp;one&nbsp;edge&nbsp;is&nbsp;not&nbsp;given,&nbsp;or&nbsp;outside&nbsp;the&nbsp;range&nbsp;of&nbsp;32&nbsp;bit&nbsp;signed&nbsp;integer.<br>
+&nbsp;&nbsp;TypeError:&nbsp;If&nbsp;at&nbsp;least&nbsp;one&nbsp;cost&nbsp;is&nbsp;not&nbsp;integer.</tt></dd></dl>
+
+<dl><dt><a name="GraphSet-difference"><strong>difference</strong></a>(self, *others)</dt><dd><tt>Returns&nbsp;a&nbsp;new&nbsp;GraphSet&nbsp;with&nbsp;graphs&nbsp;in&nbsp;`self`&nbsp;that&nbsp;are&nbsp;not&nbsp;in&nbsp;the&nbsp;others.<br>
+&nbsp;<br>
+The&nbsp;`self`&nbsp;is&nbsp;not&nbsp;changed.<br>
+&nbsp;<br>
+Examples:<br>
+&nbsp;&nbsp;&gt;&gt;&gt;&nbsp;graph1&nbsp;=&nbsp;[]<br>
+&nbsp;&nbsp;&gt;&gt;&gt;&nbsp;graph2&nbsp;=&nbsp;[(1,&nbsp;2)]<br>
+&nbsp;&nbsp;&gt;&gt;&gt;&nbsp;graph3&nbsp;=&nbsp;[(1,&nbsp;2),&nbsp;(1,&nbsp;4)]<br>
+&nbsp;&nbsp;&gt;&gt;&gt;&nbsp;gs1&nbsp;=&nbsp;GraphSet([graph1,&nbsp;graph2])<br>
+&nbsp;&nbsp;&gt;&gt;&gt;&nbsp;gs2&nbsp;=&nbsp;GraphSet([graph2,&nbsp;graph3])<br>
+&nbsp;&nbsp;&gt;&gt;&gt;&nbsp;gs1&nbsp;-&nbsp;gs2<br>
+&nbsp;&nbsp;GraphSet([])<br>
+&nbsp;<br>
+Returns:<br>
+&nbsp;&nbsp;A&nbsp;new&nbsp;GraphSet&nbsp;object.<br>
+&nbsp;<br>
+See&nbsp;Also:<br>
+&nbsp;&nbsp;<a href="#graphillion.GraphSet-union">union</a>(),&nbsp;<a href="#graphillion.GraphSet-intersection">intersection</a>(),&nbsp;<a href="#graphillion.GraphSet-symmetric_difference">symmetric_difference</a>(),<br>
+&nbsp;&nbsp;<a href="#graphillion.GraphSet-difference_update">difference_update</a>()</tt></dd></dl>
+
+<dl><dt><a name="GraphSet-difference_update"><strong>difference_update</strong></a>(self, *others)</dt><dd><tt>Update&nbsp;`self`,&nbsp;removing&nbsp;graphs&nbsp;found&nbsp;in&nbsp;others.<br>
+&nbsp;<br>
+Examples:<br>
+&nbsp;&nbsp;&gt;&gt;&gt;&nbsp;graph1&nbsp;=&nbsp;[]<br>
+&nbsp;&nbsp;&gt;&gt;&gt;&nbsp;graph2&nbsp;=&nbsp;[(1,&nbsp;2)]<br>
+&nbsp;&nbsp;&gt;&gt;&gt;&nbsp;graph3&nbsp;=&nbsp;[(1,&nbsp;2),&nbsp;(1,&nbsp;4)]<br>
+&nbsp;&nbsp;&gt;&gt;&gt;&nbsp;gs1&nbsp;=&nbsp;GraphSet([graph1,&nbsp;graph2])<br>
+&nbsp;&nbsp;&gt;&gt;&gt;&nbsp;gs2&nbsp;=&nbsp;GraphSet([graph2,&nbsp;graph3])<br>
+&nbsp;&nbsp;&gt;&gt;&gt;&nbsp;gs1&nbsp;-=&nbsp;gs2<br>
+&nbsp;&nbsp;&gt;&gt;&gt;&nbsp;gs1<br>
+&nbsp;&nbsp;GraphSet([[]])<br>
+&nbsp;<br>
+Returns:<br>
+&nbsp;&nbsp;A&nbsp;new&nbsp;GraphSet&nbsp;object.<br>
+&nbsp;<br>
+See&nbsp;Also:<br>
+&nbsp;&nbsp;<a href="#graphillion.GraphSet-difference">difference</a>()</tt></dd></dl>
+
+<dl><dt><a name="GraphSet-discard"><strong>discard</strong></a>(self, obj)</dt><dd><tt>Removes&nbsp;a&nbsp;given&nbsp;graph,&nbsp;edge,&nbsp;or&nbsp;vertex&nbsp;from&nbsp;`self`.<br>
+&nbsp;<br>
+If&nbsp;a&nbsp;graph&nbsp;is&nbsp;given,&nbsp;the&nbsp;graph&nbsp;is&nbsp;just&nbsp;removed&nbsp;from&nbsp;`self`<br>
+GraphSet.&nbsp;&nbsp;If&nbsp;an&nbsp;edge&nbsp;is&nbsp;given,&nbsp;the&nbsp;edge&nbsp;is&nbsp;removed&nbsp;from&nbsp;all<br>
+the&nbsp;graphs&nbsp;in&nbsp;`self`.&nbsp;&nbsp;The&nbsp;`self`&nbsp;will&nbsp;be&nbsp;changed.<br>
+&nbsp;<br>
+Examples:<br>
+&nbsp;&nbsp;&gt;&gt;&gt;&nbsp;graph1&nbsp;=&nbsp;[(1,&nbsp;2),&nbsp;(1,&nbsp;4)]<br>
+&nbsp;&nbsp;&gt;&gt;&gt;&nbsp;graph2&nbsp;=&nbsp;[(2,&nbsp;3)]<br>
+&nbsp;&nbsp;&gt;&gt;&gt;&nbsp;gs&nbsp;=&nbsp;GraphSet([graph1,&nbsp;graph2])<br>
+&nbsp;&nbsp;&gt;&gt;&gt;&nbsp;edge&nbsp;=&nbsp;(1,&nbsp;2)<br>
+&nbsp;&nbsp;&gt;&gt;&gt;&nbsp;gs.<a href="#graphillion.GraphSet-discard">discard</a>(edge)<br>
+&nbsp;&nbsp;&gt;&gt;&gt;&nbsp;gs<br>
+&nbsp;&nbsp;GraphSet([[(1,&nbsp;4)],&nbsp;[(2,&nbsp;3)]])<br>
+&nbsp;<br>
+Args:<br>
+&nbsp;&nbsp;obj:&nbsp;A&nbsp;graph&nbsp;(an&nbsp;edge&nbsp;list),&nbsp;an&nbsp;edge,&nbsp;or&nbsp;a&nbsp;vertex&nbsp;in&nbsp;the<br>
+&nbsp;&nbsp;&nbsp;&nbsp;universe.<br>
+&nbsp;<br>
+Returns:<br>
+&nbsp;&nbsp;None.<br>
+&nbsp;<br>
+Raises:<br>
+&nbsp;&nbsp;KeyError:&nbsp;If&nbsp;a&nbsp;given&nbsp;edge&nbsp;or&nbsp;vertex&nbsp;is&nbsp;not&nbsp;found&nbsp;in&nbsp;the<br>
+&nbsp;&nbsp;&nbsp;&nbsp;universe.<br>
+&nbsp;<br>
+See&nbsp;Also:<br>
+&nbsp;&nbsp;<a href="#graphillion.GraphSet-add">add</a>(),&nbsp;<a href="#graphillion.GraphSet-remove">remove</a>(),&nbsp;<a href="#graphillion.GraphSet-pop">pop</a>()</tt></dd></dl>
+
+<dl><dt><a name="GraphSet-dump"><strong>dump</strong></a>(self, fp)</dt><dd><tt>Serialize&nbsp;`self`&nbsp;to&nbsp;a&nbsp;file&nbsp;`fp`.<br>
+&nbsp;<br>
+This&nbsp;method&nbsp;does&nbsp;not&nbsp;serialize&nbsp;the&nbsp;universe,&nbsp;which&nbsp;should&nbsp;be<br>
+saved&nbsp;separately&nbsp;by&nbsp;pickle.<br>
+&nbsp;<br>
+Examples:<br>
+&nbsp;&nbsp;&gt;&gt;&gt;&nbsp;import&nbsp;pickle<br>
+&nbsp;&nbsp;&gt;&gt;&gt;&nbsp;fp&nbsp;=&nbsp;open('/path/to/graphset',&nbsp;'wb')<br>
+&nbsp;&nbsp;&gt;&gt;&gt;&nbsp;gs.<a href="#graphillion.GraphSet-dump">dump</a>(fp)<br>
+&nbsp;&nbsp;&gt;&gt;&gt;&nbsp;fp&nbsp;=&nbsp;open('/path/to/universe'&nbsp;'wb')<br>
+&nbsp;&nbsp;&gt;&gt;&gt;&nbsp;pickle.<a href="#graphillion.GraphSet-dump">dump</a>(GraphSet.<a href="#graphillion.GraphSet-universe">universe</a>(),&nbsp;fp)<br>
+&nbsp;<br>
+Args:<br>
+&nbsp;&nbsp;fp:&nbsp;A&nbsp;write-supporting&nbsp;file-like&nbsp;object.<br>
+&nbsp;<br>
+See&nbsp;Also:<br>
+&nbsp;&nbsp;<a href="#graphillion.GraphSet-dumps">dumps</a>(),&nbsp;<a href="#graphillion.GraphSet-load">load</a>()</tt></dd></dl>
+
+<dl><dt><a name="GraphSet-dumps"><strong>dumps</strong></a>(self)</dt><dd><tt>Returns&nbsp;a&nbsp;serialized&nbsp;`self`.<br>
+&nbsp;<br>
+This&nbsp;method&nbsp;does&nbsp;not&nbsp;serialize&nbsp;the&nbsp;universe,&nbsp;which&nbsp;should&nbsp;be<br>
+saved&nbsp;separately&nbsp;by&nbsp;pickle.<br>
+&nbsp;<br>
+Examples:<br>
+&nbsp;&nbsp;&gt;&gt;&gt;&nbsp;import&nbsp;pickle<br>
+&nbsp;&nbsp;&gt;&gt;&gt;&nbsp;graphset_str&nbsp;=&nbsp;gs.<a href="#graphillion.GraphSet-dumps">dumps</a>()<br>
+&nbsp;&nbsp;&gt;&gt;&gt;&nbsp;universe_str&nbsp;=&nbsp;pickle.<a href="#graphillion.GraphSet-dumps">dumps</a>(GraphSet.<a href="#graphillion.GraphSet-universe">universe</a>())<br>
+&nbsp;<br>
+See&nbsp;Also:<br>
+&nbsp;&nbsp;<a href="#graphillion.GraphSet-dump">dump</a>(),&nbsp;<a href="#graphillion.GraphSet-loads">loads</a>()</tt></dd></dl>
+
+<dl><dt><a name="GraphSet-excluding"><strong>excluding</strong></a>(self, obj)</dt><dd><tt>Returns&nbsp;a&nbsp;new&nbsp;GraphSet&nbsp;that&nbsp;doesn't&nbsp;include&nbsp;`obj`.<br>
+&nbsp;<br>
+Returns&nbsp;a&nbsp;new&nbsp;set&nbsp;of&nbsp;graphs&nbsp;that&nbsp;don't&nbsp;include&nbsp;`obj`,&nbsp;which<br>
+can&nbsp;be&nbsp;a&nbsp;GraphSet,&nbsp;a&nbsp;graph,&nbsp;an&nbsp;edge,&nbsp;or&nbsp;a&nbsp;vertex.&nbsp;&nbsp;If&nbsp;`obj`&nbsp;is<br>
+a&nbsp;GraphSet,&nbsp;a&nbsp;graph&nbsp;returned&nbsp;doesn't&nbsp;include&nbsp;*any&nbsp;of*&nbsp;graphs<br>
+in&nbsp;the&nbsp;given&nbsp;GraphSet.<br>
+&nbsp;<br>
+The&nbsp;graphs&nbsp;stored&nbsp;in&nbsp;the&nbsp;new&nbsp;GraphSet&nbsp;are&nbsp;selected&nbsp;from&nbsp;`self`<br>
+GraphSet.&nbsp;&nbsp;The&nbsp;`self`&nbsp;is&nbsp;not&nbsp;changed.<br>
+&nbsp;<br>
+Examples:<br>
+&nbsp;&nbsp;&gt;&gt;&gt;&nbsp;graph1&nbsp;=&nbsp;[(1,&nbsp;2),&nbsp;(1,&nbsp;4)]<br>
+&nbsp;&nbsp;&gt;&gt;&gt;&nbsp;graph2&nbsp;=&nbsp;[(2,&nbsp;3)]<br>
+&nbsp;&nbsp;&gt;&gt;&gt;&nbsp;gs&nbsp;=&nbsp;GraphSet([graph1,&nbsp;graph2])<br>
+&nbsp;&nbsp;&gt;&gt;&gt;&nbsp;vertex&nbsp;=&nbsp;4<br>
+&nbsp;&nbsp;&gt;&gt;&gt;&nbsp;gs.<a href="#graphillion.GraphSet-excluding">excluding</a>(vertex)<br>
+&nbsp;&nbsp;GraphSet([[(2,&nbsp;3)]])<br>
+&nbsp;<br>
+Args:<br>
+&nbsp;&nbsp;obj:&nbsp;A&nbsp;GraphSet,&nbsp;a&nbsp;graph&nbsp;(an&nbsp;edge&nbsp;list),&nbsp;an&nbsp;edge,&nbsp;or&nbsp;a<br>
+&nbsp;&nbsp;&nbsp;&nbsp;vertex.<br>
+&nbsp;<br>
+Returns:<br>
+&nbsp;&nbsp;A&nbsp;new&nbsp;GraphSet&nbsp;object.<br>
+&nbsp;<br>
+Raises:<br>
+&nbsp;&nbsp;KeyError:&nbsp;If&nbsp;a&nbsp;given&nbsp;edge&nbsp;or&nbsp;vertex&nbsp;is&nbsp;not&nbsp;found&nbsp;in&nbsp;the<br>
+&nbsp;&nbsp;&nbsp;&nbsp;universe.<br>
+&nbsp;<br>
+See&nbsp;Also:<br>
+&nbsp;&nbsp;<a href="#graphillion.GraphSet-including">including</a>()</tt></dd></dl>
+
+<dl><dt><a name="GraphSet-flip"><strong>flip</strong></a>(self, edge)</dt><dd><tt>Flips&nbsp;the&nbsp;state&nbsp;of&nbsp;a&nbsp;given&nbsp;edge&nbsp;over&nbsp;all&nbsp;graphs&nbsp;in&nbsp;`self`.<br>
+&nbsp;<br>
+If&nbsp;a&nbsp;graph&nbsp;in&nbsp;`self`&nbsp;includes&nbsp;the&nbsp;given&nbsp;edge,&nbsp;the&nbsp;edge&nbsp;is<br>
+removed&nbsp;from&nbsp;the&nbsp;graph.&nbsp;&nbsp;If&nbsp;a&nbsp;graph&nbsp;in&nbsp;`self`&nbsp;does&nbsp;not&nbsp;include<br>
+the&nbsp;given&nbsp;edge,&nbsp;the&nbsp;edge&nbsp;is&nbsp;added&nbsp;to&nbsp;the&nbsp;graph.<br>
+&nbsp;<br>
+The&nbsp;`self`&nbsp;will&nbsp;be&nbsp;changed.<br>
+&nbsp;<br>
+Examples:<br>
+&nbsp;&nbsp;&gt;&gt;&gt;&nbsp;graph1&nbsp;=&nbsp;[(1,&nbsp;2),&nbsp;(1,&nbsp;4)]<br>
+&nbsp;&nbsp;&gt;&gt;&gt;&nbsp;graph2&nbsp;=&nbsp;[(2,&nbsp;3)]<br>
+&nbsp;&nbsp;&gt;&gt;&gt;&nbsp;gs&nbsp;=&nbsp;GraphSet([graph1,&nbsp;graph2])<br>
+&nbsp;&nbsp;&gt;&gt;&gt;&nbsp;edge&nbsp;=&nbsp;(1,&nbsp;2)<br>
+&nbsp;&nbsp;&gt;&gt;&gt;&nbsp;gs.<a href="#graphillion.GraphSet-flip">flip</a>(edge)<br>
+&nbsp;&nbsp;&gt;&gt;&gt;&nbsp;gs<br>
+&nbsp;&nbsp;GraphSet([[(1,&nbsp;4)],&nbsp;[(1,&nbsp;2),&nbsp;(2,&nbsp;3)]])<br>
+&nbsp;<br>
+Args:<br>
+&nbsp;&nbsp;edge:&nbsp;An&nbsp;edge&nbsp;in&nbsp;the&nbsp;universe.<br>
+&nbsp;<br>
+Returns:<br>
+&nbsp;&nbsp;A&nbsp;new&nbsp;GraphSet&nbsp;object.<br>
+&nbsp;<br>
+Raises:<br>
+&nbsp;&nbsp;KeyError:&nbsp;If&nbsp;a&nbsp;given&nbsp;edge&nbsp;is&nbsp;not&nbsp;found&nbsp;in&nbsp;the&nbsp;universe.</tt></dd></dl>
+
+<dl><dt><a name="GraphSet-graph_size"><strong>graph_size</strong></a>(self, size)</dt><dd><tt>Returns&nbsp;a&nbsp;new&nbsp;GraphSet&nbsp;with&nbsp;`size`&nbsp;edges.<br>
+&nbsp;<br>
+This&nbsp;method&nbsp;returns&nbsp;a&nbsp;new&nbsp;GraphSet&nbsp;with&nbsp;graphs&nbsp;that&nbsp;have<br>
+`size`&nbsp;edges.<br>
+&nbsp;<br>
+Examples:<br>
+&nbsp;&nbsp;&gt;&gt;&gt;&nbsp;graph1&nbsp;=&nbsp;[(1,&nbsp;2)]<br>
+&nbsp;&nbsp;&gt;&gt;&gt;&nbsp;graph2&nbsp;=&nbsp;[(1,&nbsp;2),&nbsp;(1,&nbsp;4)]<br>
+&nbsp;&nbsp;&gt;&gt;&gt;&nbsp;graph3&nbsp;=&nbsp;[(1,&nbsp;2),&nbsp;(1,&nbsp;4),&nbsp;(2,&nbsp;3)]<br>
+&nbsp;&nbsp;&gt;&gt;&gt;&nbsp;gs&nbsp;=&nbsp;GraphSet([graph1,&nbsp;graph2,&nbsp;graph3])<br>
+&nbsp;&nbsp;&gt;&gt;&gt;&nbsp;gs.<a href="#graphillion.GraphSet-graph_size">graph_size</a>(2)<br>
+&nbsp;&nbsp;GraphSet([[(1,&nbsp;2),&nbsp;(1,&nbsp;4)]])<br>
+&nbsp;<br>
+Args:<br>
+&nbsp;&nbsp;size:&nbsp;The&nbsp;number&nbsp;of&nbsp;edges&nbsp;in&nbsp;a&nbsp;graph.<br>
+&nbsp;<br>
+Returns:<br>
+&nbsp;&nbsp;A&nbsp;new&nbsp;GraphSet&nbsp;object.<br>
+&nbsp;<br>
+See&nbsp;Also:<br>
+&nbsp;&nbsp;<a href="#graphillion.GraphSet-smaller">smaller</a>(),&nbsp;<a href="#graphillion.GraphSet-larger">larger</a>()</tt></dd></dl>
+
+<dl><dt><a name="GraphSet-hitting"><strong>hitting</strong></a> = <a href="#GraphSet-blocking">blocking</a>(self)</dt></dl>
+
+<dl><dt><a name="GraphSet-included"><strong>included</strong></a>(self, obj)</dt><dd><tt>Returns&nbsp;a&nbsp;new&nbsp;GraphSet&nbsp;with&nbsp;subgraphs&nbsp;of&nbsp;a&nbsp;graph&nbsp;in&nbsp;`obj`.<br>
+&nbsp;<br>
+The&nbsp;`self`&nbsp;is&nbsp;not&nbsp;changed.<br>
+&nbsp;<br>
+Examples:<br>
+&nbsp;&nbsp;&gt;&gt;&gt;&nbsp;graph1&nbsp;=&nbsp;[(1,&nbsp;2)]<br>
+&nbsp;&nbsp;&gt;&gt;&gt;&nbsp;graph2&nbsp;=&nbsp;[(1,&nbsp;2),&nbsp;(1,&nbsp;4)]<br>
+&nbsp;&nbsp;&gt;&gt;&gt;&nbsp;graph3&nbsp;=&nbsp;graph1&nbsp;+&nbsp;[(2,&nbsp;3)]<br>
+&nbsp;&nbsp;&gt;&gt;&gt;&nbsp;graph4&nbsp;=&nbsp;[(1,&nbsp;4),&nbsp;(2,&nbsp;3)]<br>
+&nbsp;&nbsp;&gt;&gt;&gt;&nbsp;gs1&nbsp;=&nbsp;GraphSet([graph1,&nbsp;graph2])<br>
+&nbsp;&nbsp;&gt;&gt;&gt;&nbsp;gs2&nbsp;=&nbsp;GraphSet([graph3,&nbsp;graph4])<br>
+&nbsp;&nbsp;&gt;&gt;&gt;&nbsp;gs1.<a href="#graphillion.GraphSet-included">included</a>(gs2)<br>
+&nbsp;&nbsp;GraphSet([[(1,&nbsp;2)]])<br>
+&nbsp;<br>
+Args:<br>
+&nbsp;&nbsp;obj:&nbsp;A&nbsp;GraphSet&nbsp;or&nbsp;a&nbsp;graph&nbsp;(an&nbsp;edge&nbsp;list).<br>
+&nbsp;<br>
+Returns:<br>
+&nbsp;&nbsp;A&nbsp;new&nbsp;GraphSet&nbsp;object.<br>
+&nbsp;<br>
+See&nbsp;Also:<br>
+&nbsp;&nbsp;<a href="#graphillion.GraphSet-including">including</a>()</tt></dd></dl>
+
+<dl><dt><a name="GraphSet-including"><strong>including</strong></a>(self, obj)</dt><dd><tt>Returns&nbsp;a&nbsp;new&nbsp;GraphSet&nbsp;that&nbsp;includes&nbsp;supergraphs&nbsp;of&nbsp;`obj`.<br>
+&nbsp;<br>
+Returns&nbsp;a&nbsp;new&nbsp;set&nbsp;of&nbsp;graphs&nbsp;that&nbsp;include&nbsp;`obj`,&nbsp;which&nbsp;can&nbsp;be&nbsp;a<br>
+GraphSet,&nbsp;a&nbsp;graph,&nbsp;an&nbsp;edge,&nbsp;or&nbsp;a&nbsp;vertex.&nbsp;&nbsp;If&nbsp;`obj`&nbsp;is&nbsp;a<br>
+GraphSet,&nbsp;a&nbsp;graph&nbsp;returned&nbsp;includes&nbsp;*one&nbsp;of*&nbsp;graphs&nbsp;in&nbsp;the<br>
+given&nbsp;GraphSet.<br>
+&nbsp;<br>
+The&nbsp;graphs&nbsp;stored&nbsp;in&nbsp;the&nbsp;new&nbsp;GraphSet&nbsp;are&nbsp;selected&nbsp;from&nbsp;`self`<br>
+GraphSet.&nbsp;&nbsp;The&nbsp;`self`&nbsp;is&nbsp;not&nbsp;changed.<br>
+&nbsp;<br>
+Examples:<br>
+&nbsp;&nbsp;&gt;&gt;&gt;&nbsp;graph1&nbsp;=&nbsp;[(1,&nbsp;2),&nbsp;(1,&nbsp;4)]<br>
+&nbsp;&nbsp;&gt;&gt;&gt;&nbsp;graph2&nbsp;=&nbsp;[(2,&nbsp;3)]<br>
+&nbsp;&nbsp;&gt;&gt;&gt;&nbsp;gs&nbsp;=&nbsp;GraphSet([graph1,&nbsp;graph2])<br>
+&nbsp;&nbsp;&gt;&gt;&gt;&nbsp;vertex&nbsp;=&nbsp;4<br>
+&nbsp;&nbsp;&gt;&gt;&gt;&nbsp;gs.<a href="#graphillion.GraphSet-including">including</a>(vertex)<br>
+&nbsp;&nbsp;GraphSet([[(1,&nbsp;2),&nbsp;(1,&nbsp;4)]])<br>
+&nbsp;<br>
+Args:<br>
+&nbsp;&nbsp;obj:&nbsp;A&nbsp;GraphSet,&nbsp;a&nbsp;graph&nbsp;(an&nbsp;edge&nbsp;list),&nbsp;an&nbsp;edge,&nbsp;or&nbsp;a<br>
+&nbsp;&nbsp;&nbsp;&nbsp;vertex.<br>
+&nbsp;<br>
+Returns:<br>
+&nbsp;&nbsp;A&nbsp;new&nbsp;GraphSet&nbsp;object.<br>
+&nbsp;<br>
+Raises:<br>
+&nbsp;&nbsp;KeyError:&nbsp;If&nbsp;a&nbsp;given&nbsp;edge&nbsp;or&nbsp;a&nbsp;vertex&nbsp;is&nbsp;not&nbsp;found&nbsp;in&nbsp;the<br>
+&nbsp;&nbsp;&nbsp;&nbsp;universe.<br>
+&nbsp;<br>
+See&nbsp;Also:<br>
+&nbsp;&nbsp;<a href="#graphillion.GraphSet-excluding">excluding</a>()</tt></dd></dl>
+
+<dl><dt><a name="GraphSet-intersection"><strong>intersection</strong></a>(self, *others)</dt><dd><tt>Returns&nbsp;a&nbsp;new&nbsp;GraphSet&nbsp;with&nbsp;graphs&nbsp;common&nbsp;to&nbsp;`self`&nbsp;and&nbsp;all&nbsp;others.<br>
+&nbsp;<br>
+The&nbsp;`self`&nbsp;is&nbsp;not&nbsp;changed.<br>
+&nbsp;<br>
+Examples:<br>
+&nbsp;&nbsp;&gt;&gt;&gt;&nbsp;graph1&nbsp;=&nbsp;[]<br>
+&nbsp;&nbsp;&gt;&gt;&gt;&nbsp;graph2&nbsp;=&nbsp;[(1,&nbsp;2)]<br>
+&nbsp;&nbsp;&gt;&gt;&gt;&nbsp;graph3&nbsp;=&nbsp;[(1,&nbsp;2),&nbsp;(1,&nbsp;4)]<br>
+&nbsp;&nbsp;&gt;&gt;&gt;&nbsp;gs1&nbsp;=&nbsp;GraphSet([graph1,&nbsp;graph2])<br>
+&nbsp;&nbsp;&gt;&gt;&gt;&nbsp;gs2&nbsp;=&nbsp;GraphSet([graph2,&nbsp;graph3])<br>
+&nbsp;&nbsp;&gt;&gt;&gt;&nbsp;gs1&nbsp;&amp;&nbsp;gs2<br>
+&nbsp;&nbsp;GraphSet([[(1,&nbsp;2)]])<br>
+&nbsp;<br>
+Returns:<br>
+&nbsp;&nbsp;A&nbsp;new&nbsp;GraphSet&nbsp;object.<br>
+&nbsp;<br>
+See&nbsp;Also:<br>
+&nbsp;&nbsp;<a href="#graphillion.GraphSet-union">union</a>(),&nbsp;<a href="#graphillion.GraphSet-difference">difference</a>(),&nbsp;<a href="#graphillion.GraphSet-symmetric_difference">symmetric_difference</a>(),<br>
+&nbsp;&nbsp;<a href="#graphillion.GraphSet-intersection_update">intersection_update</a>()</tt></dd></dl>
+
+<dl><dt><a name="GraphSet-intersection_update"><strong>intersection_update</strong></a>(self, *others)</dt><dd><tt>Updates&nbsp;`self`,&nbsp;keeping&nbsp;only&nbsp;graphs&nbsp;found&nbsp;in&nbsp;it&nbsp;and&nbsp;all&nbsp;others.<br>
+&nbsp;<br>
+Examples:<br>
+&nbsp;&nbsp;&gt;&gt;&gt;&nbsp;graph1&nbsp;=&nbsp;[]<br>
+&nbsp;&nbsp;&gt;&gt;&gt;&nbsp;graph2&nbsp;=&nbsp;[(1,&nbsp;2)]<br>
+&nbsp;&nbsp;&gt;&gt;&gt;&nbsp;graph3&nbsp;=&nbsp;[(1,&nbsp;2),&nbsp;(1,&nbsp;4)]<br>
+&nbsp;&nbsp;&gt;&gt;&gt;&nbsp;gs1&nbsp;=&nbsp;GraphSet([graph1,&nbsp;graph2])<br>
+&nbsp;&nbsp;&gt;&gt;&gt;&nbsp;gs2&nbsp;=&nbsp;GraphSet([graph2,&nbsp;graph3])<br>
+&nbsp;&nbsp;&gt;&gt;&gt;&nbsp;gs1&nbsp;&amp;=&nbsp;gs2<br>
+&nbsp;&nbsp;&gt;&gt;&gt;&nbsp;gs1<br>
+&nbsp;&nbsp;GraphSet([[(1,&nbsp;2)]])<br>
+&nbsp;<br>
+Returns:<br>
+&nbsp;&nbsp;A&nbsp;new&nbsp;GraphSet&nbsp;object.<br>
+&nbsp;<br>
+See&nbsp;Also:<br>
+&nbsp;&nbsp;<a href="#graphillion.GraphSet-intersection">intersection</a>()</tt></dd></dl>
+
+<dl><dt><a name="GraphSet-isdisjoint"><strong>isdisjoint</strong></a>(self, other)</dt><dd><tt>Returns&nbsp;True&nbsp;if&nbsp;`self`&nbsp;has&nbsp;no&nbsp;graphs&nbsp;in&nbsp;common&nbsp;with&nbsp;`other`.<br>
+&nbsp;<br>
+Examples:<br>
+&nbsp;&nbsp;&gt;&gt;&gt;&nbsp;gs1&nbsp;=&nbsp;GraphSet([graph1,&nbsp;graph2])<br>
+&nbsp;&nbsp;&gt;&gt;&gt;&nbsp;gs2&nbsp;=&nbsp;GraphSet([graph3,&nbsp;graph4,&nbsp;graph5])<br>
+&nbsp;&nbsp;&gt;&gt;&gt;&nbsp;gs1.disjoint(gs2)<br>
+&nbsp;&nbsp;True<br>
+&nbsp;<br>
+Returns:<br>
+&nbsp;&nbsp;True&nbsp;or&nbsp;False.<br>
+&nbsp;<br>
+See&nbsp;Also:<br>
+&nbsp;&nbsp;<a href="#graphillion.GraphSet-issubset">issubset</a>(),&nbsp;<a href="#graphillion.GraphSet-issuperset">issuperset</a>()</tt></dd></dl>
+
+<dl><dt><a name="GraphSet-issubset"><strong>issubset</strong></a>(self, other)</dt><dd><tt>Tests&nbsp;if&nbsp;every&nbsp;graph&nbsp;in&nbsp;`self`&nbsp;is&nbsp;in&nbsp;`other`.<br>
+&nbsp;<br>
+Examples:<br>
+&nbsp;&nbsp;&gt;&gt;&gt;&nbsp;gs1&nbsp;=&nbsp;GraphSet([graph1,&nbsp;graph3])<br>
+&nbsp;&nbsp;&gt;&gt;&gt;&nbsp;gs2&nbsp;=&nbsp;GraphSet([graph1,&nbsp;graph2,&nbsp;graph3])<br>
+&nbsp;&nbsp;&gt;&gt;&gt;&nbsp;gs1&nbsp;&lt;=&nbsp;gs2<br>
+&nbsp;&nbsp;True<br>
+&nbsp;<br>
+Returns:<br>
+&nbsp;&nbsp;True&nbsp;or&nbsp;False.<br>
+&nbsp;<br>
+See&nbsp;Also:<br>
+&nbsp;&nbsp;<a href="#graphillion.GraphSet-issuperset">issuperset</a>(),&nbsp;<a href="#graphillion.GraphSet-isdisjoint">isdisjoint</a>()</tt></dd></dl>
+
+<dl><dt><a name="GraphSet-issuperset"><strong>issuperset</strong></a>(self, other)</dt><dd><tt>Tests&nbsp;if&nbsp;every&nbsp;graph&nbsp;in&nbsp;`other`&nbsp;is&nbsp;in&nbsp;`self`.<br>
+&nbsp;<br>
+Examples:<br>
+&nbsp;&nbsp;&gt;&gt;&gt;&nbsp;gs1&nbsp;=&nbsp;GraphSet([graph1,&nbsp;graph2,&nbsp;graph3])<br>
+&nbsp;&nbsp;&gt;&gt;&gt;&nbsp;gs2&nbsp;=&nbsp;GraphSet([graph1,&nbsp;graph3])<br>
+&nbsp;&nbsp;&gt;&gt;&gt;&nbsp;gs1&nbsp;&gt;=&nbsp;gs2<br>
+&nbsp;&nbsp;True<br>
+&nbsp;<br>
+Returns:<br>
+&nbsp;&nbsp;True&nbsp;or&nbsp;False.<br>
+&nbsp;<br>
+See&nbsp;Also:<br>
+&nbsp;&nbsp;<a href="#graphillion.GraphSet-issubset">issubset</a>(),&nbsp;<a href="#graphillion.GraphSet-isdisjoint">isdisjoint</a>()</tt></dd></dl>
+
+<dl><dt><a name="GraphSet-join"><strong>join</strong></a>(self, other)</dt><dd><tt>Returns&nbsp;a&nbsp;new&nbsp;GraphSet&nbsp;of&nbsp;join&nbsp;between&nbsp;`self`&nbsp;and&nbsp;`other`.<br>
+&nbsp;<br>
+The&nbsp;join&nbsp;operation&nbsp;is&nbsp;defined&nbsp;by,<br>
+&nbsp;&nbsp;gs1&nbsp;\sqcup&nbsp;gs2&nbsp;=&nbsp;{a&nbsp;\cup&nbsp;b&nbsp;|&nbsp;a&nbsp;\in&nbsp;gs1&nbsp;and&nbsp;b&nbsp;\in&nbsp;gs2}.<br>
+D.&nbsp;Knuth,&nbsp;Exercise&nbsp;203,&nbsp;The&nbsp;art&nbsp;of&nbsp;computer&nbsp;programming,<br>
+Sect.7.1.4.<br>
+&nbsp;<br>
+The&nbsp;`self`&nbsp;is&nbsp;not&nbsp;changed.<br>
+&nbsp;<br>
+Examples:<br>
+&nbsp;&nbsp;&gt;&gt;&gt;&nbsp;graph1&nbsp;=&nbsp;[(1,&nbsp;2)]<br>
+&nbsp;&nbsp;&gt;&gt;&gt;&nbsp;graph2&nbsp;=&nbsp;[(1,&nbsp;2),&nbsp;(1,&nbsp;4)]<br>
+&nbsp;&nbsp;&gt;&gt;&gt;&nbsp;graph3&nbsp;=&nbsp;[(2,&nbsp;3)]<br>
+&nbsp;&nbsp;&gt;&gt;&gt;&nbsp;gs1&nbsp;=&nbsp;GraphSet([graph1,&nbsp;graph2])<br>
+&nbsp;&nbsp;&gt;&gt;&gt;&nbsp;gs2&nbsp;=&nbsp;GraphSet([graph3])<br>
+&nbsp;&nbsp;&gt;&gt;&gt;&nbsp;gs1.<a href="#graphillion.GraphSet-join">join</a>(gs2)<br>
+&nbsp;&nbsp;GraphSet([[(1,&nbsp;2),&nbsp;(2,&nbsp;3)],&nbsp;[(1,&nbsp;2),&nbsp;(1,&nbsp;4),&nbsp;(2,&nbsp;3)]])<br>
+&nbsp;<br>
+Returns:<br>
+&nbsp;&nbsp;A&nbsp;new&nbsp;GraphSet&nbsp;object.<br>
+&nbsp;<br>
+See&nbsp;Also:<br>
+&nbsp;&nbsp;<a href="#graphillion.GraphSet-meet">meet</a>()</tt></dd></dl>
+
+<dl><dt><a name="GraphSet-larger"><strong>larger</strong></a>(self, size)</dt><dd><tt>Returns&nbsp;a&nbsp;new&nbsp;GraphSet&nbsp;with&nbsp;graphs&nbsp;that&nbsp;have&nbsp;more&nbsp;than&nbsp;`size`&nbsp;edges.<br>
+&nbsp;<br>
+The&nbsp;`self`&nbsp;is&nbsp;not&nbsp;changed.<br>
+&nbsp;<br>
+Examples:<br>
+&nbsp;&nbsp;&gt;&gt;&gt;&nbsp;graph1&nbsp;=&nbsp;[(1,&nbsp;2)]<br>
+&nbsp;&nbsp;&gt;&gt;&gt;&nbsp;graph2&nbsp;=&nbsp;[(1,&nbsp;2),&nbsp;(1,&nbsp;4)]<br>
+&nbsp;&nbsp;&gt;&gt;&gt;&nbsp;graph3&nbsp;=&nbsp;[(1,&nbsp;2),&nbsp;(1,&nbsp;4),&nbsp;(2,&nbsp;3)]<br>
+&nbsp;&nbsp;&gt;&gt;&gt;&nbsp;gs&nbsp;=&nbsp;GraphSet([graph1,&nbsp;graph2,&nbsp;graph3])<br>
+&nbsp;&nbsp;&gt;&gt;&gt;&nbsp;gs.<a href="#graphillion.GraphSet-larger">larger</a>(2)<br>
+&nbsp;&nbsp;GraphSet([[(1,&nbsp;2),&nbsp;(1,&nbsp;4),&nbsp;(2,&nbsp;3)]])<br>
+&nbsp;<br>
+Args:<br>
+&nbsp;&nbsp;size:&nbsp;The&nbsp;number&nbsp;of&nbsp;edges&nbsp;in&nbsp;a&nbsp;graph.<br>
+&nbsp;<br>
+Returns:<br>
+&nbsp;&nbsp;A&nbsp;new&nbsp;GraphSet&nbsp;object.<br>
+&nbsp;<br>
+See&nbsp;Also:<br>
+&nbsp;&nbsp;<a href="#graphillion.GraphSet-smaller">smaller</a>(),&nbsp;<a href="#graphillion.GraphSet-graph_size">graph_size</a>()</tt></dd></dl>
+
+<dl><dt><a name="GraphSet-len"><strong>len</strong></a>(self, size=None)</dt><dd><tt>Returns&nbsp;the&nbsp;number&nbsp;of&nbsp;graphs,&nbsp;or&nbsp;a&nbsp;new&nbsp;GraphSet&nbsp;with&nbsp;`size`&nbsp;edges.<br>
+&nbsp;<br>
+If&nbsp;no&nbsp;argument&nbsp;is&nbsp;given,&nbsp;this&nbsp;method&nbsp;returns&nbsp;the&nbsp;number&nbsp;of<br>
+graphs&nbsp;in&nbsp;`self`.&nbsp;&nbsp;Otherwise,&nbsp;this&nbsp;method&nbsp;returns&nbsp;a&nbsp;new<br>
+GraphSet&nbsp;with&nbsp;graphs&nbsp;that&nbsp;have&nbsp;`size`&nbsp;edges;&nbsp;this&nbsp;usage&nbsp;of<br>
+`<a href="#graphillion.GraphSet-len">len</a>(size)`&nbsp;is&nbsp;obsoleted,&nbsp;and&nbsp;use&nbsp;`<a href="#graphillion.GraphSet-graph_size">graph_size</a>(size)`&nbsp;instead.<br>
+&nbsp;<br>
+This&nbsp;method&nbsp;never&nbsp;raises&nbsp;OverflowError&nbsp;unlike&nbsp;built-in&nbsp;<a href="#graphillion.GraphSet-len">len</a>(gs).<br>
+&nbsp;<br>
+Examples:<br>
+&nbsp;&nbsp;&gt;&gt;&gt;&nbsp;gs&nbsp;=&nbsp;GraphSet([graph1,&nbsp;graph2])<br>
+&nbsp;&nbsp;&gt;&gt;&gt;&nbsp;gs.<a href="#graphillion.GraphSet-len">len</a>()<br>
+&nbsp;&nbsp;2L<br>
+&nbsp;<br>
+Examples:<br>
+&nbsp;&nbsp;&gt;&gt;&gt;&nbsp;graph1&nbsp;=&nbsp;[(1,&nbsp;2)]<br>
+&nbsp;&nbsp;&gt;&gt;&gt;&nbsp;graph2&nbsp;=&nbsp;[(1,&nbsp;2),&nbsp;(1,&nbsp;4)]<br>
+&nbsp;&nbsp;&gt;&gt;&gt;&nbsp;graph3&nbsp;=&nbsp;[(1,&nbsp;2),&nbsp;(1,&nbsp;4),&nbsp;(2,&nbsp;3)]<br>
+&nbsp;&nbsp;&gt;&gt;&gt;&nbsp;gs&nbsp;=&nbsp;GraphSet([graph1,&nbsp;graph2,&nbsp;graph3])<br>
+&nbsp;&nbsp;&gt;&gt;&gt;&nbsp;gs.<a href="#graphillion.GraphSet-len">len</a>(2)<br>
+&nbsp;&nbsp;GraphSet([[(1,&nbsp;2),&nbsp;(1,&nbsp;4)]])<br>
+&nbsp;<br>
+Args:<br>
+&nbsp;&nbsp;size:&nbsp;Optional.&nbsp;&nbsp;The&nbsp;number&nbsp;of&nbsp;edges&nbsp;in&nbsp;a&nbsp;graph.<br>
+&nbsp;<br>
+Returns:<br>
+&nbsp;&nbsp;The&nbsp;number&nbsp;of&nbsp;graphs,&nbsp;or&nbsp;a&nbsp;new&nbsp;GraphSet&nbsp;object.<br>
+&nbsp;<br>
+See&nbsp;Also:<br>
+&nbsp;&nbsp;<a href="#graphillion.GraphSet-__len__">__len__</a>(),&nbsp;<a href="#graphillion.GraphSet-smaller">smaller</a>(),&nbsp;<a href="#graphillion.GraphSet-larger">larger</a>(),&nbsp;<a href="#graphillion.GraphSet-graph_size">graph_size</a>()</tt></dd></dl>
+
+<dl><dt><a name="GraphSet-max_iter"><strong>max_iter</strong></a>(self, weights=None)</dt><dd><tt>Iterates&nbsp;over&nbsp;graphs&nbsp;in&nbsp;the&nbsp;descending&nbsp;order&nbsp;of&nbsp;weights.<br>
+&nbsp;<br>
+Returns&nbsp;a&nbsp;generator&nbsp;that&nbsp;iterates&nbsp;over&nbsp;graphs&nbsp;in&nbsp;`self`<br>
+GraphSet.&nbsp;&nbsp;The&nbsp;graphs&nbsp;are&nbsp;selected&nbsp;in&nbsp;the&nbsp;descending&nbsp;order&nbsp;of<br>
+edge&nbsp;weights,&nbsp;which&nbsp;are&nbsp;specified&nbsp;by&nbsp;the&nbsp;argument&nbsp;`weights`&nbsp;or<br>
+those&nbsp;set&nbsp;as&nbsp;the&nbsp;universe&nbsp;(1.0&nbsp;for&nbsp;unspecified&nbsp;edges).&nbsp;&nbsp;The<br>
+`weights`&nbsp;does&nbsp;not&nbsp;overwrite&nbsp;the&nbsp;weights&nbsp;of&nbsp;the&nbsp;universe.<br>
+&nbsp;<br>
+Examples:<br>
+&nbsp;&nbsp;&gt;&gt;&gt;&nbsp;graph1&nbsp;=&nbsp;[(1,&nbsp;2),&nbsp;(1,&nbsp;4)]<br>
+&nbsp;&nbsp;&gt;&gt;&gt;&nbsp;graph2&nbsp;=&nbsp;[(2,&nbsp;3)]<br>
+&nbsp;&nbsp;&gt;&gt;&gt;&nbsp;gs&nbsp;=&nbsp;GraphSet([graph1,&nbsp;graph2])<br>
+&nbsp;&nbsp;&gt;&gt;&gt;&nbsp;weights&nbsp;=&nbsp;{(1,&nbsp;2):&nbsp;2.0,&nbsp;(1,&nbsp;4):&nbsp;-3.0}&nbsp;&nbsp;#&nbsp;(2,&nbsp;3):&nbsp;1.0<br>
+&nbsp;&nbsp;&gt;&gt;&gt;&nbsp;for&nbsp;g&nbsp;in&nbsp;gs.<a href="#graphillion.GraphSet-max_iter">max_iter</a>(weights):<br>
+&nbsp;&nbsp;...&nbsp;&nbsp;&nbsp;g<br>
+&nbsp;&nbsp;[(2,&nbsp;3)]<br>
+&nbsp;&nbsp;[(1,&nbsp;2),&nbsp;(1,&nbsp;4)]<br>
+&nbsp;<br>
+Args:<br>
+&nbsp;&nbsp;weights:&nbsp;Optional.&nbsp;&nbsp;A&nbsp;dictionary&nbsp;of&nbsp;edges&nbsp;to&nbsp;the&nbsp;weight<br>
+&nbsp;&nbsp;&nbsp;&nbsp;values.<br>
+&nbsp;<br>
+Returns:<br>
+&nbsp;&nbsp;A&nbsp;generator.<br>
+&nbsp;<br>
+Yields:<br>
+&nbsp;&nbsp;A&nbsp;graph.<br>
+&nbsp;<br>
+See&nbsp;Also:<br>
+&nbsp;&nbsp;<a href="#graphillion.GraphSet-__iter__">__iter__</a>(),&nbsp;<a href="#graphillion.GraphSet-rand_iter">rand_iter</a>(),&nbsp;<a href="#graphillion.GraphSet-min_iter">min_iter</a>()</tt></dd></dl>
+
+<dl><dt><a name="GraphSet-maximal"><strong>maximal</strong></a>(self)</dt><dd><tt>Returns&nbsp;a&nbsp;new&nbsp;GraphSet&nbsp;of&nbsp;maximal&nbsp;graphs.<br>
+&nbsp;<br>
+The&nbsp;maximal&nbsp;sets&nbsp;are&nbsp;defined&nbsp;by,<br>
+&nbsp;&nbsp;gs.<a href="#graphillion.GraphSet-maximal">maximal</a>()&nbsp;=&nbsp;{a&nbsp;\in&nbsp;gs&nbsp;|&nbsp;b&nbsp;\in&nbsp;gs&nbsp;and&nbsp;a&nbsp;\superseteq&nbsp;-&gt;&nbsp;a&nbsp;=&nbsp;b}.<br>
+D.&nbsp;Knuth,&nbsp;Exercise&nbsp;236,&nbsp;The&nbsp;art&nbsp;of&nbsp;computer&nbsp;programming,<br>
+Sect.7.1.4.<br>
+&nbsp;<br>
+The&nbsp;`self`&nbsp;is&nbsp;not&nbsp;changed.<br>
+&nbsp;<br>
+Examples:<br>
+&nbsp;&nbsp;&gt;&gt;&gt;&nbsp;graph1&nbsp;=&nbsp;[(1,&nbsp;2)]<br>
+&nbsp;&nbsp;&gt;&gt;&gt;&nbsp;graph2&nbsp;=&nbsp;[(1,&nbsp;2),&nbsp;(1,&nbsp;4)]<br>
+&nbsp;&nbsp;&gt;&gt;&gt;&nbsp;graph3&nbsp;=&nbsp;[(1,&nbsp;4),&nbsp;(2,&nbsp;3)]<br>
+&nbsp;&nbsp;&gt;&gt;&gt;&nbsp;gs&nbsp;=&nbsp;GraphSet([graph1,&nbsp;graph2,&nbsp;graph3])<br>
+&nbsp;&nbsp;&gt;&gt;&gt;&nbsp;gs.<a href="#graphillion.GraphSet-maximal">maximal</a>()<br>
+&nbsp;&nbsp;GraphSet([[(1,&nbsp;2),&nbsp;(1,&nbsp;4)],&nbsp;[(1,&nbsp;4),&nbsp;(2,&nbsp;3)]])<br>
+&nbsp;<br>
+Returns:<br>
+&nbsp;&nbsp;A&nbsp;new&nbsp;GraphSet&nbsp;object.<br>
+&nbsp;<br>
+See&nbsp;Also:<br>
+&nbsp;&nbsp;<a href="#graphillion.GraphSet-minimal">minimal</a>()</tt></dd></dl>
+
+<dl><dt><a name="GraphSet-meet"><strong>meet</strong></a>(self, other)</dt><dd><tt>Returns&nbsp;a&nbsp;new&nbsp;GraphSet&nbsp;of&nbsp;meet&nbsp;between&nbsp;`self`&nbsp;and&nbsp;`other`.<br>
+&nbsp;<br>
+The&nbsp;meet&nbsp;operation&nbsp;is&nbsp;defined&nbsp;by,<br>
+&nbsp;&nbsp;gs1&nbsp;\sqcap&nbsp;gs2&nbsp;=&nbsp;{a&nbsp;\cap&nbsp;b&nbsp;|&nbsp;a&nbsp;\in&nbsp;gs1&nbsp;and&nbsp;b&nbsp;\in&nbsp;gs2}.<br>
+D.&nbsp;Knuth,&nbsp;Exercise&nbsp;203,&nbsp;The&nbsp;art&nbsp;of&nbsp;computer&nbsp;programming,<br>
+Sect.7.1.4.<br>
+&nbsp;<br>
+The&nbsp;`self`&nbsp;is&nbsp;not&nbsp;changed.<br>
+&nbsp;<br>
+Examples:<br>
+&nbsp;&nbsp;&gt;&gt;&gt;&nbsp;graph1&nbsp;=&nbsp;[(1,&nbsp;2),&nbsp;(1,&nbsp;4)]<br>
+&nbsp;&nbsp;&gt;&gt;&gt;&nbsp;graph2&nbsp;=&nbsp;[(1,&nbsp;2),&nbsp;(2,&nbsp;3)]<br>
+&nbsp;&nbsp;&gt;&gt;&gt;&nbsp;graph3&nbsp;=&nbsp;[(1,&nbsp;4),&nbsp;(2,&nbsp;3)]<br>
+&nbsp;&nbsp;&gt;&gt;&gt;&nbsp;gs1&nbsp;=&nbsp;GraphSet([graph1,&nbsp;graph2])<br>
+&nbsp;&nbsp;&gt;&gt;&gt;&nbsp;gs2&nbsp;=&nbsp;GraphSet([graph3])<br>
+&nbsp;&nbsp;&gt;&gt;&gt;&nbsp;gs1.<a href="#graphillion.GraphSet-meet">meet</a>(gs2)<br>
+&nbsp;&nbsp;GraphSet([[(1,&nbsp;4)],&nbsp;[(2,&nbsp;3)]])<br>
+&nbsp;<br>
+Returns:<br>
+&nbsp;&nbsp;A&nbsp;new&nbsp;GraphSet&nbsp;object.<br>
+&nbsp;<br>
+See&nbsp;Also:<br>
+&nbsp;&nbsp;<a href="#graphillion.GraphSet-join">join</a>()</tt></dd></dl>
+
+<dl><dt><a name="GraphSet-min_iter"><strong>min_iter</strong></a>(self, weights=None)</dt><dd><tt>Iterates&nbsp;over&nbsp;graphs&nbsp;in&nbsp;the&nbsp;ascending&nbsp;order&nbsp;of&nbsp;weights.<br>
+&nbsp;<br>
+Returns&nbsp;a&nbsp;generator&nbsp;that&nbsp;iterates&nbsp;over&nbsp;graphs&nbsp;in&nbsp;`self`<br>
+GraphSet.&nbsp;&nbsp;The&nbsp;graphs&nbsp;are&nbsp;selected&nbsp;in&nbsp;the&nbsp;ascending&nbsp;order&nbsp;of<br>
+edge&nbsp;weights,&nbsp;which&nbsp;are&nbsp;specified&nbsp;by&nbsp;the&nbsp;argument&nbsp;`weights`&nbsp;or<br>
+those&nbsp;set&nbsp;as&nbsp;the&nbsp;universe&nbsp;(1.0&nbsp;for&nbsp;unspecified&nbsp;edges).&nbsp;&nbsp;The<br>
+`weights`&nbsp;does&nbsp;not&nbsp;overwrite&nbsp;the&nbsp;weights&nbsp;of&nbsp;the&nbsp;universe.<br>
+&nbsp;<br>
+Examples:<br>
+&nbsp;&nbsp;&gt;&gt;&gt;&nbsp;graph1&nbsp;=&nbsp;[(1,&nbsp;2),&nbsp;(1,&nbsp;4)]<br>
+&nbsp;&nbsp;&gt;&gt;&gt;&nbsp;graph2&nbsp;=&nbsp;[(2,&nbsp;3)]<br>
+&nbsp;&nbsp;&gt;&gt;&gt;&nbsp;gs&nbsp;=&nbsp;GraphSet([graph1,&nbsp;graph2])<br>
+&nbsp;&nbsp;&gt;&gt;&gt;&nbsp;weights&nbsp;=&nbsp;{(1,&nbsp;2):&nbsp;2.0,&nbsp;(1,&nbsp;4):&nbsp;-3.0}&nbsp;&nbsp;#&nbsp;(2,&nbsp;3):&nbsp;1.0<br>
+&nbsp;&nbsp;&gt;&gt;&gt;&nbsp;for&nbsp;g&nbsp;in&nbsp;gs.<a href="#graphillion.GraphSet-min_iter">min_iter</a>(weights):<br>
+&nbsp;&nbsp;...&nbsp;&nbsp;&nbsp;g<br>
+&nbsp;&nbsp;[(1,&nbsp;2),&nbsp;(1,&nbsp;4)]<br>
+&nbsp;&nbsp;[(2,&nbsp;3)]<br>
+&nbsp;<br>
+Args:<br>
+&nbsp;&nbsp;weights:&nbsp;Optional.&nbsp;&nbsp;A&nbsp;dictionary&nbsp;of&nbsp;edges&nbsp;to&nbsp;the&nbsp;weight<br>
+&nbsp;&nbsp;&nbsp;&nbsp;values.<br>
+&nbsp;<br>
+Returns:<br>
+&nbsp;&nbsp;A&nbsp;generator.<br>
+&nbsp;<br>
+Yields:<br>
+&nbsp;&nbsp;A&nbsp;graph.<br>
+&nbsp;<br>
+See&nbsp;Also:<br>
+&nbsp;&nbsp;<a href="#graphillion.GraphSet-__iter__">__iter__</a>(),&nbsp;<a href="#graphillion.GraphSet-rand_iter">rand_iter</a>(),&nbsp;<a href="#graphillion.GraphSet-max_iter">max_iter</a>()</tt></dd></dl>
+
+<dl><dt><a name="GraphSet-minimal"><strong>minimal</strong></a>(self)</dt><dd><tt>Returns&nbsp;a&nbsp;new&nbsp;GraphSet&nbsp;of&nbsp;minimal&nbsp;graphs.<br>
+&nbsp;<br>
+The&nbsp;minimal&nbsp;sets&nbsp;are&nbsp;defined&nbsp;by,<br>
+&nbsp;&nbsp;gs.<a href="#graphillion.GraphSet-minimal">minimal</a>()&nbsp;=&nbsp;{a&nbsp;\in&nbsp;gs&nbsp;|&nbsp;b&nbsp;\in&nbsp;gs&nbsp;and&nbsp;a&nbsp;\subseteq&nbsp;-&gt;&nbsp;a&nbsp;=&nbsp;b}.<br>
+D.&nbsp;Knuth,&nbsp;Exercise&nbsp;236,&nbsp;The&nbsp;art&nbsp;of&nbsp;computer&nbsp;programming,<br>
+Sect.7.1.4.<br>
+&nbsp;<br>
+The&nbsp;`self`&nbsp;is&nbsp;not&nbsp;changed.<br>
+&nbsp;<br>
+Examples:<br>
+&nbsp;&nbsp;&gt;&gt;&gt;&nbsp;graph1&nbsp;=&nbsp;[(1,&nbsp;2)]<br>
+&nbsp;&nbsp;&gt;&gt;&gt;&nbsp;graph2&nbsp;=&nbsp;[(1,&nbsp;2),&nbsp;(1,&nbsp;4)]<br>
+&nbsp;&nbsp;&gt;&gt;&gt;&nbsp;graph3&nbsp;=&nbsp;[(1,&nbsp;4),&nbsp;(2,&nbsp;3)]<br>
+&nbsp;&nbsp;&gt;&gt;&gt;&nbsp;gs&nbsp;=&nbsp;GraphSet([graph1,&nbsp;graph2,&nbsp;graph3])<br>
+&nbsp;&nbsp;&gt;&gt;&gt;&nbsp;gs.<a href="#graphillion.GraphSet-minimal">minimal</a>()<br>
+&nbsp;&nbsp;GraphSet([[(1,&nbsp;2)],&nbsp;[(1,&nbsp;4),&nbsp;(2,&nbsp;3)]])<br>
+&nbsp;<br>
+Returns:<br>
+&nbsp;&nbsp;A&nbsp;new&nbsp;GraphSet&nbsp;object.<br>
+&nbsp;<br>
+See&nbsp;Also:<br>
+&nbsp;&nbsp;<a href="#graphillion.GraphSet-maximal">maximal</a>(),&nbsp;<a href="#graphillion.GraphSet-blocking">blocking</a>()</tt></dd></dl>
+
+<dl><dt><a name="GraphSet-non_subgraphs"><strong>non_subgraphs</strong></a>(self, other)</dt><dd><tt>Returns&nbsp;a&nbsp;new&nbsp;GraphSet&nbsp;with&nbsp;graphs&nbsp;that&nbsp;aren't&nbsp;subgraphs&nbsp;of&nbsp;any&nbsp;graph&nbsp;in&nbsp;`other`.<br>
+&nbsp;<br>
+The&nbsp;`self`&nbsp;is&nbsp;not&nbsp;changed.<br>
+&nbsp;<br>
+The&nbsp;non_subsets&nbsp;are&nbsp;defined&nbsp;by,<br>
+&nbsp;&nbsp;gs1.non_subsets(gs2)&nbsp;=&nbsp;{a&nbsp;\in&nbsp;gs1&nbsp;|&nbsp;b&nbsp;\in&nbsp;gs2&nbsp;-&gt;&nbsp;a&nbsp;\not\subseteq&nbsp;b}.<br>
+D.&nbsp;Knuth,&nbsp;Exercise&nbsp;236,&nbsp;The&nbsp;art&nbsp;of&nbsp;computer&nbsp;programming,<br>
+Sect.7.1.4.<br>
+&nbsp;<br>
+Examples:<br>
+&nbsp;&nbsp;&gt;&gt;&gt;&nbsp;graph1&nbsp;=&nbsp;[(1,&nbsp;2)]<br>
+&nbsp;&nbsp;&gt;&gt;&gt;&nbsp;graph2&nbsp;=&nbsp;[(1,&nbsp;2),&nbsp;(1,&nbsp;4)]<br>
+&nbsp;&nbsp;&gt;&gt;&gt;&nbsp;graph3&nbsp;=&nbsp;[(1,&nbsp;2),&nbsp;(2,&nbsp;3)]<br>
+&nbsp;&nbsp;&gt;&gt;&gt;&nbsp;graph4&nbsp;=&nbsp;[(1,&nbsp;4),&nbsp;(2,&nbsp;3)]<br>
+&nbsp;&nbsp;&gt;&gt;&gt;&nbsp;gs1&nbsp;=&nbsp;GraphSet([graph1,&nbsp;graph2])<br>
+&nbsp;&nbsp;&gt;&gt;&gt;&nbsp;gs2&nbsp;=&nbsp;GraphSet([graph3,&nbsp;graph4])<br>
+&nbsp;&nbsp;&gt;&gt;&gt;&nbsp;gs1.<a href="#graphillion.GraphSet-non_subgraphs">non_subgraphs</a>(gs2)<br>
+&nbsp;&nbsp;GraphSet([[(1,&nbsp;2),&nbsp;(1,&nbsp;4)]])<br>
+&nbsp;<br>
+Returns:<br>
+&nbsp;&nbsp;A&nbsp;new&nbsp;GraphSet&nbsp;object.<br>
+&nbsp;<br>
+See&nbsp;Also:<br>
+&nbsp;&nbsp;non_supersets(),&nbsp;subsets()</tt></dd></dl>
+
+<dl><dt><a name="GraphSet-non_supergraphs"><strong>non_supergraphs</strong></a>(self, other)</dt><dd><tt>Returns&nbsp;a&nbsp;new&nbsp;GraphSet&nbsp;with&nbsp;graphs&nbsp;that&nbsp;aren't&nbsp;supergraphs&nbsp;of&nbsp;any&nbsp;graph&nbsp;in&nbsp;`other`.<br>
+&nbsp;<br>
+The&nbsp;`self`&nbsp;is&nbsp;not&nbsp;changed.<br>
+&nbsp;<br>
+The&nbsp;non_supersets&nbsp;are&nbsp;defined&nbsp;by,<br>
+&nbsp;&nbsp;gs1.non_supersets(gs2)&nbsp;=&nbsp;{a&nbsp;\in&nbsp;gs1&nbsp;|&nbsp;b&nbsp;\in&nbsp;gs2&nbsp;-&gt;&nbsp;a&nbsp;\not\superseteq&nbsp;b}.<br>
+D.&nbsp;Knuth,&nbsp;Exercise&nbsp;236,&nbsp;The&nbsp;art&nbsp;of&nbsp;computer&nbsp;programming,<br>
+Sect.7.1.4.<br>
+&nbsp;<br>
+Examples:<br>
+&nbsp;&nbsp;&gt;&gt;&gt;&nbsp;graph1&nbsp;=&nbsp;[(1,&nbsp;2),&nbsp;(2,&nbsp;3)]<br>
+&nbsp;&nbsp;&gt;&gt;&gt;&nbsp;graph2&nbsp;=&nbsp;[(1,&nbsp;4),&nbsp;(2,&nbsp;3)]<br>
+&nbsp;&nbsp;&gt;&gt;&gt;&nbsp;graph3&nbsp;=&nbsp;[(1,&nbsp;2)]<br>
+&nbsp;&nbsp;&gt;&gt;&gt;&nbsp;graph4&nbsp;=&nbsp;[(1,&nbsp;2),&nbsp;(1,&nbsp;4)]<br>
+&nbsp;&nbsp;&gt;&gt;&gt;&nbsp;gs1&nbsp;=&nbsp;GraphSet([graph1,&nbsp;graph2])<br>
+&nbsp;&nbsp;&gt;&gt;&gt;&nbsp;gs2&nbsp;=&nbsp;GraphSet([graph3,&nbsp;graph4])<br>
+&nbsp;&nbsp;&gt;&gt;&gt;&nbsp;gs1.<a href="#graphillion.GraphSet-non_supergraphs">non_supergraphs</a>(gs2)<br>
+&nbsp;&nbsp;GraphSet([[(1,&nbsp;4),&nbsp;(2,&nbsp;3)]])<br>
+&nbsp;<br>
+Returns:<br>
+&nbsp;&nbsp;A&nbsp;new&nbsp;GraphSet&nbsp;object.<br>
+&nbsp;<br>
+See&nbsp;Also:<br>
+&nbsp;&nbsp;non_subsets(),&nbsp;supersets()</tt></dd></dl>
+
+<dl><dt><a name="GraphSet-pop"><strong>pop</strong></a>(self)</dt><dd><tt>Removes&nbsp;and&nbsp;returns&nbsp;an&nbsp;arbitrary&nbsp;graph&nbsp;from&nbsp;`self`.<br>
+&nbsp;<br>
+The&nbsp;`self`&nbsp;will&nbsp;be&nbsp;changed.<br>
+&nbsp;<br>
+Examples:<br>
+&nbsp;&nbsp;&gt;&gt;&gt;&nbsp;graph1&nbsp;=&nbsp;[(1,&nbsp;2),&nbsp;(1,&nbsp;4)]<br>
+&nbsp;&nbsp;&gt;&gt;&gt;&nbsp;graph2&nbsp;=&nbsp;[(2,&nbsp;3)]<br>
+&nbsp;&nbsp;&gt;&gt;&gt;&nbsp;gs&nbsp;=&nbsp;GraphSet([graph1,&nbsp;graph2])<br>
+&nbsp;&nbsp;&gt;&gt;&gt;&nbsp;gs.<a href="#graphillion.GraphSet-pop">pop</a>()<br>
+&nbsp;&nbsp;[(1,&nbsp;2),&nbsp;(1,&nbsp;4)]<br>
+&nbsp;&nbsp;&gt;&gt;&gt;&nbsp;gs<br>
+&nbsp;&nbsp;GraphSet([[(2,&nbsp;3)]])<br>
+&nbsp;<br>
+Returns:<br>
+&nbsp;&nbsp;A&nbsp;graph.<br>
+&nbsp;<br>
+Raises:<br>
+&nbsp;&nbsp;KeyError:&nbsp;If&nbsp;`self`&nbsp;is&nbsp;empty.<br>
+&nbsp;<br>
+See&nbsp;Also:<br>
+&nbsp;&nbsp;<a href="#graphillion.GraphSet-remove">remove</a>(),&nbsp;<a href="#graphillion.GraphSet-discard">discard</a>(),&nbsp;<a href="#graphillion.GraphSet-choice">choice</a>()</tt></dd></dl>
+
+<dl><dt><a name="GraphSet-probability"><strong>probability</strong></a>(self, probabilities)</dt><dd><tt>Returns&nbsp;the&nbsp;probability&nbsp;of&nbsp;`self`&nbsp;with&nbsp;edge&nbsp;`probabilities`.<br>
+&nbsp;<br>
+This&nbsp;method&nbsp;calculates&nbsp;the&nbsp;probability&nbsp;of&nbsp;occurrence&nbsp;of&nbsp;any<br>
+graph&nbsp;in&nbsp;`self`&nbsp;given&nbsp;`probabilities`&nbsp;of&nbsp;each&nbsp;edge.<br>
+&nbsp;<br>
+Examples:<br>
+&nbsp;&nbsp;&gt;&gt;&gt;&nbsp;graph1&nbsp;=&nbsp;[(1,&nbsp;2),&nbsp;(1,&nbsp;4)]<br>
+&nbsp;&nbsp;&gt;&gt;&gt;&nbsp;graph2&nbsp;=&nbsp;[(2,&nbsp;3)]<br>
+&nbsp;&nbsp;&gt;&gt;&gt;&nbsp;gs&nbsp;=&nbsp;GraphSet([graph1,&nbsp;graph2])<br>
+&nbsp;&nbsp;&gt;&gt;&gt;&nbsp;probabilities&nbsp;=&nbsp;{(1,&nbsp;2):&nbsp;.9,&nbsp;(1,&nbsp;4):&nbsp;.8,&nbsp;(2,&nbsp;3):&nbsp;.7}<br>
+&nbsp;&nbsp;&gt;&gt;&gt;&nbsp;gs.<a href="#graphillion.GraphSet-probability">probability</a>(probabilities)<br>
+&nbsp;&nbsp;0.23<br>
+&nbsp;<br>
+Args:<br>
+&nbsp;&nbsp;probabilities:&nbsp;A&nbsp;dictionary&nbsp;of&nbsp;probabilities&nbsp;of&nbsp;each&nbsp;edge.<br>
+&nbsp;<br>
+Returns:<br>
+&nbsp;&nbsp;Probability.<br>
+&nbsp;<br>
+Raises:<br>
+&nbsp;&nbsp;KeyError:&nbsp;If&nbsp;a&nbsp;given&nbsp;edge&nbsp;is&nbsp;not&nbsp;found&nbsp;in&nbsp;the&nbsp;universe.</tt></dd></dl>
+
+<dl><dt><a name="GraphSet-quotient"><strong>quotient</strong></a>(self, other)</dt><dd><tt>Returns&nbsp;a&nbsp;new&nbsp;GraphSet&nbsp;of&nbsp;quotient.<br>
+&nbsp;<br>
+The&nbsp;quotient&nbsp;is&nbsp;defined&nbsp;by,<br>
+&nbsp;&nbsp;gs1&nbsp;/&nbsp;gs2&nbsp;=&nbsp;{a&nbsp;|&nbsp;a&nbsp;\cup&nbsp;b&nbsp;\in&nbsp;gs1&nbsp;and&nbsp;a&nbsp;\cap&nbsp;b&nbsp;=&nbsp;\empty,&nbsp;\forall&nbsp;b&nbsp;\in&nbsp;gs2}.<br>
+D.&nbsp;Knuth,&nbsp;Exercise&nbsp;204,&nbsp;The&nbsp;art&nbsp;of&nbsp;computer&nbsp;programming,<br>
+Sect.7.1.4.<br>
+&nbsp;<br>
+The&nbsp;`self`&nbsp;is&nbsp;not&nbsp;changed.<br>
+&nbsp;<br>
+Examples:<br>
+&nbsp;&nbsp;&gt;&gt;&gt;&nbsp;graph1&nbsp;=&nbsp;[(1,&nbsp;2),&nbsp;(1,&nbsp;4)]<br>
+&nbsp;&nbsp;&gt;&gt;&gt;&nbsp;graph2&nbsp;=&nbsp;[(2,&nbsp;3),&nbsp;(2,&nbsp;5)]<br>
+&nbsp;&nbsp;&gt;&gt;&gt;&nbsp;graph3&nbsp;=&nbsp;[(1,&nbsp;4)]<br>
+&nbsp;&nbsp;&gt;&gt;&gt;&nbsp;gs&nbsp;=&nbsp;GraphSet([graph1,&nbsp;graph2])<br>
+&nbsp;&nbsp;&gt;&gt;&gt;&nbsp;gs&nbsp;/&nbsp;GraphSet([graph3])<br>
+&nbsp;&nbsp;GraphSet([[(1,&nbsp;2)]])<br>
+&nbsp;<br>
+Returns:<br>
+&nbsp;&nbsp;A&nbsp;new&nbsp;GraphSet&nbsp;object.<br>
+&nbsp;<br>
+See&nbsp;Also:<br>
+&nbsp;&nbsp;<a href="#graphillion.GraphSet-remainder">remainder</a>(),&nbsp;<a href="#graphillion.GraphSet-quotient_update">quotient_update</a>()</tt></dd></dl>
+
+<dl><dt><a name="GraphSet-quotient_update"><strong>quotient_update</strong></a>(self, other)</dt><dd><tt>Updates&nbsp;`self`&nbsp;by&nbsp;the&nbsp;quotient.<br>
+&nbsp;<br>
+Examples:<br>
+&nbsp;&nbsp;&gt;&gt;&gt;&nbsp;graph1&nbsp;=&nbsp;[(1,&nbsp;2),&nbsp;(1,&nbsp;4)]<br>
+&nbsp;&nbsp;&gt;&gt;&gt;&nbsp;graph2&nbsp;=&nbsp;[(2,&nbsp;3),&nbsp;(2,&nbsp;5)]<br>
+&nbsp;&nbsp;&gt;&gt;&gt;&nbsp;graph3&nbsp;=&nbsp;[(1,&nbsp;4)]<br>
+&nbsp;&nbsp;&gt;&gt;&gt;&nbsp;gs&nbsp;=&nbsp;GraphSet([graph1,&nbsp;graph2])<br>
+&nbsp;&nbsp;&gt;&gt;&gt;&nbsp;gs&nbsp;/=&nbsp;GraphSet([graph3])<br>
+&nbsp;&nbsp;&gt;&gt;&gt;&nbsp;gs<br>
+&nbsp;&nbsp;GraphSet([[(1,&nbsp;2)]])<br>
+&nbsp;<br>
+Returns:<br>
+&nbsp;&nbsp;A&nbsp;new&nbsp;GraphSet&nbsp;object.<br>
+&nbsp;<br>
+See&nbsp;Also:<br>
+&nbsp;&nbsp;<a href="#graphillion.GraphSet-quotient">quotient</a>()</tt></dd></dl>
+
+<dl><dt><a name="GraphSet-rand_iter"><strong>rand_iter</strong></a>(self)</dt><dd><tt>Iterates&nbsp;over&nbsp;graphs&nbsp;uniformly&nbsp;randomly.<br>
+&nbsp;<br>
+This&nbsp;method&nbsp;relies&nbsp;on&nbsp;its&nbsp;own&nbsp;random&nbsp;number&nbsp;generator,&nbsp;doesn't<br>
+rely&nbsp;on&nbsp;Python&nbsp;random&nbsp;module.<br>
+&nbsp;<br>
+Examples:<br>
+&nbsp;&nbsp;&gt;&gt;&gt;&nbsp;graph1&nbsp;=&nbsp;[(1,&nbsp;2)]<br>
+&nbsp;&nbsp;&gt;&gt;&gt;&nbsp;graph2&nbsp;=&nbsp;[(1,&nbsp;2),&nbsp;(1,&nbsp;4)]<br>
+&nbsp;&nbsp;&gt;&gt;&gt;&nbsp;gs&nbsp;=&nbsp;GraphSet([graph1,&nbsp;graph2])<br>
+&nbsp;&nbsp;&gt;&gt;&gt;&nbsp;for&nbsp;g&nbsp;in&nbsp;gs.<a href="#graphillion.GraphSet-rand_iter">rand_iter</a>():<br>
+&nbsp;&nbsp;...&nbsp;&nbsp;&nbsp;g<br>
+&nbsp;&nbsp;[(1,&nbsp;2)]<br>
+&nbsp;&nbsp;[(1,&nbsp;2),&nbsp;(1,&nbsp;4)]<br>
+&nbsp;<br>
+Returns:<br>
+&nbsp;&nbsp;A&nbsp;generator.<br>
+&nbsp;<br>
+Yields:<br>
+&nbsp;&nbsp;A&nbsp;graph.<br>
+&nbsp;<br>
+See&nbsp;Also:<br>
+&nbsp;&nbsp;<a href="#graphillion.GraphSet-__iter__">__iter__</a>(),&nbsp;<a href="#graphillion.GraphSet-max_iter">max_iter</a>(),&nbsp;<a href="#graphillion.GraphSet-min_iter">min_iter</a>()</tt></dd></dl>
+
+<dl><dt><a name="GraphSet-remainder"><strong>remainder</strong></a>(self, other)</dt><dd><tt>Returns&nbsp;a&nbsp;new&nbsp;GraphSet&nbsp;of&nbsp;remainder.<br>
+&nbsp;<br>
+The&nbsp;remainder&nbsp;is&nbsp;defined&nbsp;by,<br>
+&nbsp;&nbsp;gs1&nbsp;%&nbsp;gs2&nbsp;=&nbsp;gs1&nbsp;-&nbsp;(gs1&nbsp;\sqcup&nbsp;(gs1&nbsp;/&nbsp;gs2)).<br>
+D.&nbsp;Knuth,&nbsp;Exercise&nbsp;204,&nbsp;The&nbsp;art&nbsp;of&nbsp;computer&nbsp;programming,<br>
+Sect.7.1.4.<br>
+&nbsp;<br>
+The&nbsp;`self`&nbsp;is&nbsp;not&nbsp;changed.<br>
+&nbsp;<br>
+Examples:<br>
+&nbsp;&nbsp;&gt;&gt;&gt;&nbsp;graph1&nbsp;=&nbsp;[(1,&nbsp;2),&nbsp;(1,&nbsp;4)]<br>
+&nbsp;&nbsp;&gt;&gt;&gt;&nbsp;graph2&nbsp;=&nbsp;[(2,&nbsp;3),&nbsp;(2,&nbsp;5)]<br>
+&nbsp;&nbsp;&gt;&gt;&gt;&nbsp;graph3&nbsp;=&nbsp;[(1,&nbsp;4)]<br>
+&nbsp;&nbsp;&gt;&gt;&gt;&nbsp;gs&nbsp;=&nbsp;GraphSet([graph1,&nbsp;graph2])<br>
+&nbsp;&nbsp;&gt;&gt;&gt;&nbsp;gs&nbsp;%&nbsp;GraphSet([graph3])<br>
+&nbsp;&nbsp;GraphSet([[(2,&nbsp;3),&nbsp;(2,&nbsp;5)]])<br>
+&nbsp;<br>
+Returns:<br>
+&nbsp;&nbsp;A&nbsp;new&nbsp;GraphSet&nbsp;object.<br>
+&nbsp;<br>
+See&nbsp;Also:<br>
+&nbsp;&nbsp;<a href="#graphillion.GraphSet-quotient">quotient</a>(),&nbsp;<a href="#graphillion.GraphSet-remainder_update">remainder_update</a>()</tt></dd></dl>
+
+<dl><dt><a name="GraphSet-remainder_update"><strong>remainder_update</strong></a>(self, other)</dt><dd><tt>Updates&nbsp;`self`&nbsp;by&nbsp;the&nbsp;remainder.<br>
+&nbsp;<br>
+Examples:<br>
+&nbsp;&nbsp;&gt;&gt;&gt;&nbsp;graph1&nbsp;=&nbsp;[(1,&nbsp;2),&nbsp;(1,&nbsp;4)]<br>
+&nbsp;&nbsp;&gt;&gt;&gt;&nbsp;graph2&nbsp;=&nbsp;[(2,&nbsp;3),&nbsp;(2,&nbsp;5)]<br>
+&nbsp;&nbsp;&gt;&gt;&gt;&nbsp;graph3&nbsp;=&nbsp;[(1,&nbsp;4)]<br>
+&nbsp;&nbsp;&gt;&gt;&gt;&nbsp;gs&nbsp;=&nbsp;GraphSet([graph1,&nbsp;graph2])<br>
+&nbsp;&nbsp;&gt;&gt;&gt;&nbsp;gs&nbsp;%=&nbsp;GraphSet([graph3])<br>
+&nbsp;&nbsp;&gt;&gt;&gt;&nbsp;gs<br>
+&nbsp;&nbsp;GraphSet([[(2,&nbsp;3),&nbsp;(2,&nbsp;5)]])<br>
+&nbsp;<br>
+Returns:<br>
+&nbsp;&nbsp;A&nbsp;new&nbsp;GraphSet&nbsp;object.<br>
+&nbsp;<br>
+See&nbsp;Also:<br>
+&nbsp;&nbsp;<a href="#graphillion.GraphSet-remainder">remainder</a>()</tt></dd></dl>
+
+<dl><dt><a name="GraphSet-remove"><strong>remove</strong></a>(self, obj)</dt><dd><tt>Removes&nbsp;a&nbsp;given&nbsp;graph,&nbsp;edge,&nbsp;or&nbsp;vertex&nbsp;from&nbsp;`self`.<br>
+&nbsp;<br>
+If&nbsp;a&nbsp;graph&nbsp;is&nbsp;given,&nbsp;the&nbsp;graph&nbsp;is&nbsp;just&nbsp;removed&nbsp;from&nbsp;`self`<br>
+GraphSet.&nbsp;&nbsp;If&nbsp;an&nbsp;edge&nbsp;is&nbsp;given,&nbsp;the&nbsp;edge&nbsp;is&nbsp;removed&nbsp;from&nbsp;all<br>
+the&nbsp;graphs&nbsp;in&nbsp;`self`.&nbsp;&nbsp;The&nbsp;`self`&nbsp;will&nbsp;be&nbsp;changed.<br>
+&nbsp;<br>
+Examples:<br>
+&nbsp;&nbsp;&gt;&gt;&gt;&nbsp;graph1&nbsp;=&nbsp;[(1,&nbsp;2),&nbsp;(1,&nbsp;4)]<br>
+&nbsp;&nbsp;&gt;&gt;&gt;&nbsp;graph2&nbsp;=&nbsp;[(2,&nbsp;3)]<br>
+&nbsp;&nbsp;&gt;&gt;&gt;&nbsp;gs&nbsp;=&nbsp;GraphSet([graph1,&nbsp;graph2])<br>
+&nbsp;&nbsp;&gt;&gt;&gt;&nbsp;edge&nbsp;=&nbsp;(1,&nbsp;2)<br>
+&nbsp;&nbsp;&gt;&gt;&gt;&nbsp;gs.<a href="#graphillion.GraphSet-remove">remove</a>(edge)<br>
+&nbsp;&nbsp;&gt;&gt;&gt;&nbsp;gs<br>
+&nbsp;&nbsp;GraphSet([[(1,&nbsp;4)],&nbsp;[(2,&nbsp;3)]])<br>
+&nbsp;<br>
+Args:<br>
+&nbsp;&nbsp;obj:&nbsp;A&nbsp;graph&nbsp;(an&nbsp;edge&nbsp;list),&nbsp;an&nbsp;edge,&nbsp;or&nbsp;a&nbsp;vertex&nbsp;in&nbsp;the<br>
+&nbsp;&nbsp;&nbsp;&nbsp;universe.<br>
+&nbsp;<br>
+Returns:<br>
+&nbsp;&nbsp;None.<br>
+&nbsp;<br>
+Raises:<br>
+&nbsp;&nbsp;KeyError:&nbsp;If&nbsp;a&nbsp;given&nbsp;edge&nbsp;or&nbsp;vertex&nbsp;is&nbsp;not&nbsp;found&nbsp;in&nbsp;the<br>
+&nbsp;&nbsp;&nbsp;&nbsp;universe,&nbsp;or&nbsp;if&nbsp;the&nbsp;given&nbsp;graph&nbsp;is&nbsp;not&nbsp;stored&nbsp;in&nbsp;`self`.<br>
+&nbsp;<br>
+See&nbsp;Also:<br>
+&nbsp;&nbsp;<a href="#graphillion.GraphSet-add">add</a>(),&nbsp;<a href="#graphillion.GraphSet-discard">discard</a>(),&nbsp;<a href="#graphillion.GraphSet-pop">pop</a>()</tt></dd></dl>
+
+<dl><dt><a name="GraphSet-remove_add_some_edges"><strong>remove_add_some_edges</strong></a>(self)</dt><dd><tt>Returns&nbsp;a&nbsp;new&nbsp;GraphSet&nbsp;with&nbsp;graphs&nbsp;that&nbsp;are&nbsp;obtained&nbsp;by&nbsp;removing&nbsp;some&nbsp;edge&nbsp;from&nbsp;a&nbsp;graph&nbsp;in&nbsp;`self`&nbsp;and&nbsp;adding&nbsp;another&nbsp;edge&nbsp;to&nbsp;the&nbsp;graph.<br>
+&nbsp;<br>
+The&nbsp;`self`&nbsp;is&nbsp;not&nbsp;changed.<br>
+&nbsp;<br>
+Examples:<br>
+&nbsp;&nbsp;&gt;&gt;&gt;&nbsp;GraphSet.<a href="#graphillion.GraphSet-set_universe">set_universe</a>([(1,&nbsp;2),&nbsp;(1,&nbsp;4),&nbsp;(2,&nbsp;3)])<br>
+&nbsp;&nbsp;&gt;&gt;&gt;&nbsp;graph1&nbsp;=&nbsp;[(1,&nbsp;2),&nbsp;(1,&nbsp;4)]<br>
+&nbsp;&nbsp;&gt;&gt;&gt;&nbsp;graph2&nbsp;=&nbsp;[(2,&nbsp;3)]<br>
+&nbsp;&nbsp;&gt;&gt;&gt;&nbsp;gs&nbsp;=&nbsp;GraphSet([graph1,&nbsp;graph2])<br>
+&nbsp;&nbsp;&gt;&gt;&gt;&nbsp;gs.<a href="#graphillion.GraphSet-remove_add_some_edges">remove_add_some_edges</a>()<br>
+&nbsp;&nbsp;GraphSet([[(1,&nbsp;4)],&nbsp;[(1,&nbsp;2)],&nbsp;[(1,&nbsp;4),&nbsp;(2,&nbsp;3)],&nbsp;[(1,&nbsp;2),&nbsp;(2,&nbsp;3)]])<br>
+&nbsp;<br>
+Returns:<br>
+&nbsp;&nbsp;A&nbsp;new&nbsp;GraphSet&nbsp;object.</tt></dd></dl>
+
+<dl><dt><a name="GraphSet-remove_some_edge"><strong>remove_some_edge</strong></a>(self)</dt><dd><tt>Returns&nbsp;a&nbsp;new&nbsp;GraphSet&nbsp;with&nbsp;graphs&nbsp;that&nbsp;are&nbsp;obtained&nbsp;by&nbsp;removing&nbsp;some&nbsp;edge&nbsp;from&nbsp;a&nbsp;graph&nbsp;in&nbsp;`self`.<br>
+&nbsp;<br>
+The&nbsp;`self`&nbsp;is&nbsp;not&nbsp;changed.<br>
+&nbsp;<br>
+Examples:<br>
+&nbsp;&nbsp;&gt;&gt;&gt;&nbsp;GraphSet.<a href="#graphillion.GraphSet-set_universe">set_universe</a>([(1,&nbsp;2),&nbsp;(1,&nbsp;4),&nbsp;(2,&nbsp;3)])<br>
+&nbsp;&nbsp;&gt;&gt;&gt;&nbsp;graph1&nbsp;=&nbsp;[(1,&nbsp;2),&nbsp;(1,&nbsp;4)]<br>
+&nbsp;&nbsp;&gt;&gt;&gt;&nbsp;graph2&nbsp;=&nbsp;[(2,&nbsp;3)]<br>
+&nbsp;&nbsp;&gt;&gt;&gt;&nbsp;gs&nbsp;=&nbsp;GraphSet([graph1,&nbsp;graph2])<br>
+&nbsp;&nbsp;&gt;&gt;&gt;&nbsp;gs.<a href="#graphillion.GraphSet-remove_some_edge">remove_some_edge</a>()<br>
+&nbsp;&nbsp;GraphSet([[],&nbsp;[(1,&nbsp;4)],&nbsp;[(1,&nbsp;2)]])<br>
+&nbsp;<br>
+Returns:<br>
+&nbsp;&nbsp;A&nbsp;new&nbsp;GraphSet&nbsp;object.</tt></dd></dl>
+
+<dl><dt><a name="GraphSet-smaller"><strong>smaller</strong></a>(self, size)</dt><dd><tt>Returns&nbsp;a&nbsp;new&nbsp;GraphSet&nbsp;with&nbsp;graphs&nbsp;that&nbsp;have&nbsp;less&nbsp;than&nbsp;`size`&nbsp;edges.<br>
+&nbsp;<br>
+The&nbsp;`self`&nbsp;is&nbsp;not&nbsp;changed.<br>
+&nbsp;<br>
+Examples:<br>
+&nbsp;&nbsp;&gt;&gt;&gt;&nbsp;graph1&nbsp;=&nbsp;[(1,&nbsp;2)]<br>
+&nbsp;&nbsp;&gt;&gt;&gt;&nbsp;graph2&nbsp;=&nbsp;[(1,&nbsp;2),&nbsp;(1,&nbsp;4)]<br>
+&nbsp;&nbsp;&gt;&gt;&gt;&nbsp;graph3&nbsp;=&nbsp;[(1,&nbsp;2),&nbsp;(1,&nbsp;4),&nbsp;(2,&nbsp;3)]<br>
+&nbsp;&nbsp;&gt;&gt;&gt;&nbsp;gs&nbsp;=&nbsp;GraphSet([graph1,&nbsp;graph2,&nbsp;graph3])<br>
+&nbsp;&nbsp;&gt;&gt;&gt;&nbsp;gs.<a href="#graphillion.GraphSet-smaller">smaller</a>(2)<br>
+&nbsp;&nbsp;GraphSet([[(1,&nbsp;2)]])<br>
+&nbsp;<br>
+Args:<br>
+&nbsp;&nbsp;size:&nbsp;The&nbsp;number&nbsp;of&nbsp;edges&nbsp;in&nbsp;a&nbsp;graph.<br>
+&nbsp;<br>
+Returns:<br>
+&nbsp;&nbsp;A&nbsp;new&nbsp;GraphSet&nbsp;object.<br>
+&nbsp;<br>
+See&nbsp;Also:<br>
+&nbsp;&nbsp;<a href="#graphillion.GraphSet-larger">larger</a>(),&nbsp;<a href="#graphillion.GraphSet-graph_size">graph_size</a>()</tt></dd></dl>
+
+<dl><dt><a name="GraphSet-subgraphs"><strong>subgraphs</strong></a>(self, other)</dt><dd><tt>Returns&nbsp;a&nbsp;new&nbsp;GraphSet&nbsp;with&nbsp;subgraphs&nbsp;of&nbsp;a&nbsp;graph&nbsp;in&nbsp;`other`.<br>
+&nbsp;<br>
+The&nbsp;`self`&nbsp;is&nbsp;not&nbsp;changed.<br>
+&nbsp;<br>
+Examples:<br>
+&nbsp;&nbsp;&gt;&gt;&gt;&nbsp;graph1&nbsp;=&nbsp;[(1,&nbsp;2)]<br>
+&nbsp;&nbsp;&gt;&gt;&gt;&nbsp;graph2&nbsp;=&nbsp;[(1,&nbsp;2),&nbsp;(1,&nbsp;4)]<br>
+&nbsp;&nbsp;&gt;&gt;&gt;&nbsp;graph3&nbsp;=&nbsp;graph1&nbsp;+&nbsp;[(2,&nbsp;3)]<br>
+&nbsp;&nbsp;&gt;&gt;&gt;&nbsp;graph4&nbsp;=&nbsp;[(1,&nbsp;4),&nbsp;(2,&nbsp;3)]<br>
+&nbsp;&nbsp;&gt;&gt;&gt;&nbsp;gs1&nbsp;=&nbsp;GraphSet([graph1,&nbsp;graph2])<br>
+&nbsp;&nbsp;&gt;&gt;&gt;&nbsp;gs2&nbsp;=&nbsp;GraphSet([graph3,&nbsp;graph4])<br>
+&nbsp;&nbsp;&gt;&gt;&gt;&nbsp;gs1.<a href="#graphillion.GraphSet-subgraphs">subgraphs</a>(gs2)<br>
+&nbsp;&nbsp;GraphSet([[(1,&nbsp;2)]])<br>
+&nbsp;<br>
+Returns:<br>
+&nbsp;&nbsp;A&nbsp;new&nbsp;GraphSet&nbsp;object.<br>
+&nbsp;<br>
+See&nbsp;Also:<br>
+&nbsp;&nbsp;supersets(),&nbsp;non_subsets()</tt></dd></dl>
+
+<dl><dt><a name="GraphSet-supergraphs"><strong>supergraphs</strong></a>(self, other)</dt><dd><tt>Returns&nbsp;a&nbsp;new&nbsp;GraphSet&nbsp;with&nbsp;supergraphs&nbsp;of&nbsp;a&nbsp;graph&nbsp;in&nbsp;`other`.<br>
+&nbsp;<br>
+The&nbsp;`self`&nbsp;is&nbsp;not&nbsp;changed.<br>
+&nbsp;<br>
+Examples:<br>
+&nbsp;&nbsp;&gt;&gt;&gt;&nbsp;graph1&nbsp;=&nbsp;[(1,&nbsp;2),&nbsp;(2,&nbsp;3)]<br>
+&nbsp;&nbsp;&gt;&gt;&gt;&nbsp;graph2&nbsp;=&nbsp;[(1,&nbsp;4),&nbsp;(2,&nbsp;3)]<br>
+&nbsp;&nbsp;&gt;&gt;&gt;&nbsp;graph3&nbsp;=&nbsp;[(1,&nbsp;2)]&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;#&nbsp;graph1&nbsp;-&nbsp;(2,&nbsp;3)<br>
+&nbsp;&nbsp;&gt;&gt;&gt;&nbsp;graph4&nbsp;=&nbsp;[(1,&nbsp;2),&nbsp;(1,&nbsp;4)]<br>
+&nbsp;&nbsp;&gt;&gt;&gt;&nbsp;gs1&nbsp;=&nbsp;GraphSet([graph1,&nbsp;graph2])<br>
+&nbsp;&nbsp;&gt;&gt;&gt;&nbsp;gs2&nbsp;=&nbsp;GraphSet([graph3,&nbsp;graph4])<br>
+&nbsp;&nbsp;&gt;&gt;&gt;&nbsp;gs1.<a href="#graphillion.GraphSet-supergraphs">supergraphs</a>(gs2)<br>
+&nbsp;&nbsp;GraphSet([[(1,&nbsp;2),&nbsp;(2,&nbsp;3)]])<br>
+&nbsp;<br>
+Returns:<br>
+&nbsp;&nbsp;A&nbsp;new&nbsp;GraphSet&nbsp;object.<br>
+&nbsp;<br>
+See&nbsp;Also:<br>
+&nbsp;&nbsp;subsets(),&nbsp;non_supersets()</tt></dd></dl>
+
+<dl><dt><a name="GraphSet-symmetric_difference"><strong>symmetric_difference</strong></a>(self, *others)</dt><dd><tt>Returns&nbsp;a&nbsp;new&nbsp;GraphSet&nbsp;with&nbsp;graphs&nbsp;in&nbsp;either&nbsp;`self`&nbsp;or&nbsp;`other`&nbsp;but&nbsp;not&nbsp;both.<br>
+&nbsp;<br>
+The&nbsp;`self`&nbsp;is&nbsp;not&nbsp;changed.<br>
+&nbsp;<br>
+Examples:<br>
+&nbsp;&nbsp;&gt;&gt;&gt;&nbsp;graph1&nbsp;=&nbsp;[]<br>
+&nbsp;&nbsp;&gt;&gt;&gt;&nbsp;graph2&nbsp;=&nbsp;[(1,&nbsp;2)]<br>
+&nbsp;&nbsp;&gt;&gt;&gt;&nbsp;graph3&nbsp;=&nbsp;[(1,&nbsp;2),&nbsp;(1,&nbsp;4)]<br>
+&nbsp;&nbsp;&gt;&gt;&gt;&nbsp;gs1&nbsp;=&nbsp;GraphSet([graph1,&nbsp;graph2])<br>
+&nbsp;&nbsp;&gt;&gt;&gt;&nbsp;gs2&nbsp;=&nbsp;GraphSet([graph2,&nbsp;graph3])<br>
+&nbsp;&nbsp;&gt;&gt;&gt;&nbsp;gs1&nbsp;^&nbsp;gs2<br>
+&nbsp;&nbsp;GraphSet([[],&nbsp;[(1,&nbsp;2),&nbsp;(1,&nbsp;4)]])<br>
+&nbsp;<br>
+Returns:<br>
+&nbsp;&nbsp;A&nbsp;new&nbsp;GraphSet&nbsp;object.<br>
+&nbsp;<br>
+See&nbsp;Also:<br>
+&nbsp;&nbsp;<a href="#graphillion.GraphSet-union">union</a>(),&nbsp;<a href="#graphillion.GraphSet-intersection">intersection</a>(),&nbsp;<a href="#graphillion.GraphSet-difference">difference</a>(),&nbsp;<br>
+&nbsp;&nbsp;<a href="#graphillion.GraphSet-symmetric_difference_update">symmetric_difference_update</a>()</tt></dd></dl>
+
+<dl><dt><a name="GraphSet-symmetric_difference_update"><strong>symmetric_difference_update</strong></a>(self, *others)</dt><dd><tt>Update&nbsp;`self`,&nbsp;keeping&nbsp;only&nbsp;graphs&nbsp;in&nbsp;either&nbsp;GraphSet,&nbsp;but&nbsp;not&nbsp;in&nbsp;both.<br>
+&nbsp;<br>
+Examples:<br>
+&nbsp;&nbsp;&gt;&gt;&gt;&nbsp;graph1&nbsp;=&nbsp;[]<br>
+&nbsp;&nbsp;&gt;&gt;&gt;&nbsp;graph2&nbsp;=&nbsp;[(1,&nbsp;2)]<br>
+&nbsp;&nbsp;&gt;&gt;&gt;&nbsp;graph3&nbsp;=&nbsp;[(1,&nbsp;2),&nbsp;(1,&nbsp;4)]<br>
+&nbsp;&nbsp;&gt;&gt;&gt;&nbsp;gs1&nbsp;=&nbsp;GraphSet([graph1,&nbsp;graph2])<br>
+&nbsp;&nbsp;&gt;&gt;&gt;&nbsp;gs2&nbsp;=&nbsp;GraphSet([graph2,&nbsp;graph3])<br>
+&nbsp;&nbsp;&gt;&gt;&gt;&nbsp;gs1&nbsp;^=&nbsp;gs2<br>
+&nbsp;&nbsp;&gt;&gt;&gt;&nbsp;gs1<br>
+&nbsp;&nbsp;GraphSet([[],&nbsp;[(1,&nbsp;2),&nbsp;(1,&nbsp;4)]])<br>
+&nbsp;<br>
+Returns:<br>
+&nbsp;&nbsp;A&nbsp;new&nbsp;GraphSet&nbsp;object.<br>
+&nbsp;<br>
+See&nbsp;Also:<br>
+&nbsp;&nbsp;<a href="#graphillion.GraphSet-symmetric_difference">symmetric_difference</a>()</tt></dd></dl>
+
+<dl><dt><a name="GraphSet-to_vertexsetset"><strong>to_vertexsetset</strong></a>(self)</dt><dd><tt>Returns&nbsp;a&nbsp;new&nbsp;VertexSetSet&nbsp;with&nbsp;vertices&nbsp;of&nbsp;each&nbsp;graph&nbsp;in&nbsp;`self`.<br>
+&nbsp;<br>
+Examples:<br>
+&nbsp;&nbsp;&gt;&gt;&gt;&nbsp;e1&nbsp;=&nbsp;(1,&nbsp;2)<br>
+&nbsp;&nbsp;&gt;&gt;&gt;&nbsp;e2&nbsp;=&nbsp;(3,&nbsp;4)<br>
+&nbsp;&nbsp;&gt;&gt;&gt;&nbsp;e3&nbsp;=&nbsp;(2,&nbsp;3)<br>
+&nbsp;&nbsp;&gt;&gt;&gt;&nbsp;e4&nbsp;=&nbsp;(2,&nbsp;4)<br>
+&nbsp;&nbsp;&gt;&gt;&gt;&nbsp;e5&nbsp;=&nbsp;(2,&nbsp;5)<br>
+&nbsp;&nbsp;&gt;&gt;&gt;&nbsp;GraphSet.<a href="#graphillion.GraphSet-set_universe">set_universe</a>([e1,&nbsp;e2,&nbsp;e3,&nbsp;e4,&nbsp;e5],&nbsp;"as-is")<br>
+&nbsp;&nbsp;&gt;&gt;&gt;&nbsp;VertexSetSet.<a href="#graphillion.GraphSet-set_universe">set_universe</a>()<br>
+&nbsp;&nbsp;&gt;&gt;&gt;&nbsp;g1&nbsp;=&nbsp;[e2]&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;#&nbsp;vertex&nbsp;set&nbsp;is&nbsp;{3,&nbsp;4}<br>
+&nbsp;&nbsp;&gt;&gt;&gt;&nbsp;g2&nbsp;=&nbsp;[e1,&nbsp;e2]&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;#&nbsp;vertex&nbsp;set&nbsp;is&nbsp;{1,&nbsp;2,&nbsp;3,&nbsp;4}<br>
+&nbsp;&nbsp;&gt;&gt;&gt;&nbsp;g3&nbsp;=&nbsp;[e1,&nbsp;e2,&nbsp;e4]&nbsp;&nbsp;&nbsp;#&nbsp;vertex&nbsp;set&nbsp;is&nbsp;{1,&nbsp;2,&nbsp;3,&nbsp;4}<br>
+&nbsp;&nbsp;&gt;&gt;&gt;&nbsp;vss1&nbsp;=&nbsp;GraphSet([g1,&nbsp;g2,&nbsp;g3]).<a href="#graphillion.GraphSet-to_vertexsetset">to_vertexsetset</a>()<br>
+&nbsp;&nbsp;&gt;&gt;&gt;&nbsp;vss1<br>
+&nbsp;&nbsp;VertexSetSet([[3,&nbsp;4],&nbsp;[1,&nbsp;2,&nbsp;3,&nbsp;4]])<br>
+&nbsp;<br>
+Returns:<br>
+&nbsp;&nbsp;A&nbsp;new&nbsp;VertexSetSet&nbsp;object.</tt></dd></dl>
+
+<dl><dt><a name="GraphSet-union"><strong>union</strong></a>(self, *others)</dt><dd><tt>Returns&nbsp;a&nbsp;new&nbsp;GraphSet&nbsp;with&nbsp;graphs&nbsp;from&nbsp;`self`&nbsp;and&nbsp;all&nbsp;others.<br>
+&nbsp;<br>
+The&nbsp;`self`&nbsp;is&nbsp;not&nbsp;changed.<br>
+&nbsp;<br>
+Examples:<br>
+&nbsp;&nbsp;&gt;&gt;&gt;&nbsp;graph1&nbsp;=&nbsp;[]<br>
+&nbsp;&nbsp;&gt;&gt;&gt;&nbsp;graph2&nbsp;=&nbsp;[(1,&nbsp;2)]<br>
+&nbsp;&nbsp;&gt;&gt;&gt;&nbsp;graph3&nbsp;=&nbsp;[(1,&nbsp;2),&nbsp;(1,&nbsp;4)]<br>
+&nbsp;&nbsp;&gt;&gt;&gt;&nbsp;gs1&nbsp;=&nbsp;GraphSet([graph1,&nbsp;graph2])<br>
+&nbsp;&nbsp;&gt;&gt;&gt;&nbsp;gs2&nbsp;=&nbsp;GraphSet([graph2,&nbsp;graph3])<br>
+&nbsp;&nbsp;&gt;&gt;&gt;&nbsp;gs1&nbsp;|&nbsp;gs2<br>
+&nbsp;&nbsp;GraphSet([[],&nbsp;[(1,&nbsp;2)],&nbsp;[(1,&nbsp;2),&nbsp;(1,&nbsp;4)]])<br>
+&nbsp;<br>
+Returns:<br>
+&nbsp;&nbsp;A&nbsp;new&nbsp;GraphSet&nbsp;object.<br>
+&nbsp;<br>
+See&nbsp;Also:<br>
+&nbsp;&nbsp;<a href="#graphillion.GraphSet-intersection">intersection</a>(),&nbsp;<a href="#graphillion.GraphSet-difference">difference</a>(),&nbsp;<a href="#graphillion.GraphSet-symmetric_difference">symmetric_difference</a>(),<br>
+&nbsp;&nbsp;<a href="#graphillion.GraphSet-update">update</a>()</tt></dd></dl>
+
+<dl><dt><a name="GraphSet-update"><strong>update</strong></a>(self, *others)</dt><dd><tt>Updates&nbsp;`self`,&nbsp;adding&nbsp;graphs&nbsp;from&nbsp;all&nbsp;others.<br>
+&nbsp;<br>
+Examples:<br>
+&nbsp;&nbsp;&gt;&gt;&gt;&nbsp;graph1&nbsp;=&nbsp;[]<br>
+&nbsp;&nbsp;&gt;&gt;&gt;&nbsp;graph2&nbsp;=&nbsp;[(1,&nbsp;2)]<br>
+&nbsp;&nbsp;&gt;&gt;&gt;&nbsp;graph3&nbsp;=&nbsp;[(1,&nbsp;2),&nbsp;(1,&nbsp;4)]<br>
+&nbsp;&nbsp;&gt;&gt;&gt;&nbsp;gs1&nbsp;=&nbsp;GraphSet([graph1,&nbsp;graph2])<br>
+&nbsp;&nbsp;&gt;&gt;&gt;&nbsp;gs2&nbsp;=&nbsp;GraphSet([graph2,&nbsp;graph3])<br>
+&nbsp;&nbsp;&gt;&gt;&gt;&nbsp;gs1&nbsp;|=&nbsp;gs2<br>
+&nbsp;&nbsp;&gt;&gt;&gt;&nbsp;gs1<br>
+&nbsp;&nbsp;GraphSet([[],&nbsp;[(1,&nbsp;2)],&nbsp;[(1,&nbsp;2),&nbsp;(1,&nbsp;4)]])<br>
+&nbsp;<br>
+Returns:<br>
+&nbsp;&nbsp;A&nbsp;new&nbsp;GraphSet&nbsp;object.<br>
+&nbsp;<br>
+See&nbsp;Also:<br>
+&nbsp;&nbsp;<a href="#graphillion.GraphSet-union">union</a>()</tt></dd></dl>
+
+<hr>
+Static methods defined here:<br>
+<dl><dt><a name="GraphSet-b_matchings"><strong>b_matchings</strong></a>(b, graphset=None)</dt><dd><tt>Returns&nbsp;a&nbsp;GraphSet&nbsp;of&nbsp;b-matchings.<br>
+For&nbsp;a&nbsp;function&nbsp;b&nbsp;that&nbsp;maps&nbsp;from&nbsp;a&nbsp;vertex&nbsp;to&nbsp;an&nbsp;integer,<br>
+a&nbsp;b-matching&nbsp;is&nbsp;a&nbsp;set&nbsp;of&nbsp;edges&nbsp;such&nbsp;that&nbsp;each&nbsp;vertex&nbsp;v&nbsp;is&nbsp;incident<br>
+to&nbsp;at&nbsp;most&nbsp;b(v)&nbsp;edges&nbsp;of&nbsp;the&nbsp;b-matching.<br>
+&nbsp;<br>
+This&nbsp;method&nbsp;can&nbsp;be&nbsp;parallelized&nbsp;with&nbsp;OpenMP&nbsp;by&nbsp;specifying&nbsp;the<br>
+environmental&nbsp;variable&nbsp;`OMP_NUM_THREADS`:<br>
+&nbsp;<br>
+&nbsp;&nbsp;`$&nbsp;OMP_NUM_THREADS=4&nbsp;python&nbsp;your_graphillion_script.py`<br>
+&nbsp;<br>
+Examples:<br>
+&nbsp;&nbsp;&gt;&gt;&gt;&nbsp;b&nbsp;=&nbsp;{}<br>
+&nbsp;&nbsp;#&nbsp;vertices&nbsp;is&nbsp;a&nbsp;list&nbsp;of&nbsp;vertices&nbsp;in&nbsp;the&nbsp;universe<br>
+&nbsp;&nbsp;&gt;&gt;&gt;&nbsp;for&nbsp;v&nbsp;in&nbsp;vertices:<br>
+&nbsp;&nbsp;&gt;&gt;&gt;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;b[v]&nbsp;=&nbsp;1&nbsp;if&nbsp;v&nbsp;==&nbsp;1&nbsp;else&nbsp;2<br>
+&nbsp;&nbsp;&gt;&gt;&gt;&nbsp;GraphSet.<a href="#graphillion.GraphSet-b_matchings">b_matchings</a>(b)<br>
+&nbsp;<br>
+Args:<br>
+&nbsp;&nbsp;b:&nbsp;Dictionary.&nbsp;A&nbsp;key&nbsp;is&nbsp;a&nbsp;vertex&nbsp;of&nbsp;the&nbsp;universe&nbsp;graph&nbsp;and&nbsp;a&nbsp;value<br>
+&nbsp;&nbsp;&nbsp;&nbsp;is&nbsp;an&nbsp;integer.&nbsp;For&nbsp;a&nbsp;vertex&nbsp;v,&nbsp;if&nbsp;b[v]&nbsp;is&nbsp;undefined,&nbsp;it&nbsp;means&nbsp;b[v]&nbsp;==&nbsp;0.<br>
+&nbsp;&nbsp;graphset:&nbsp;Optional.&nbsp;&nbsp;A&nbsp;GraphSet&nbsp;object.&nbsp;&nbsp;Matchings&nbsp;to&nbsp;be&nbsp;stored<br>
+&nbsp;&nbsp;&nbsp;&nbsp;are&nbsp;selected&nbsp;from&nbsp;this&nbsp;object.<br>
+&nbsp;<br>
+Returns:<br>
+&nbsp;&nbsp;A&nbsp;new&nbsp;GraphSet&nbsp;object.<br>
+&nbsp;<br>
+See&nbsp;Also:<br>
+&nbsp;&nbsp;<a href="#graphillion.GraphSet-graphs">graphs</a>()</tt></dd></dl>
+
+<dl><dt><a name="GraphSet-balanced_partitions"><strong>balanced_partitions</strong></a>(weight_list=None, ratio=0.0, lower=0, upper=1073741823, num_comps=-1)</dt><dd><tt>Returns&nbsp;a&nbsp;GraphSet&nbsp;with&nbsp;balanced&nbsp;partitions&nbsp;of&nbsp;the&nbsp;graph.<br>
+&nbsp;<br>
+Examples:&nbsp;balanced&nbsp;partitions&nbsp;with&nbsp;disparity&nbsp;less&nbsp;than&nbsp;or&nbsp;equal&nbsp;to&nbsp;2.0.<br>
+&nbsp;&nbsp;&gt;&gt;&gt;&nbsp;wl&nbsp;=&nbsp;{}<br>
+&nbsp;&nbsp;&gt;&gt;&gt;&nbsp;for&nbsp;v&nbsp;in&nbsp;range(1,7):<br>
+&nbsp;&nbsp;&gt;&gt;&gt;&nbsp;&nbsp;&nbsp;if&nbsp;v&nbsp;%&nbsp;2:<br>
+&nbsp;&nbsp;&gt;&gt;&gt;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;wl[v]&nbsp;=&nbsp;1<br>
+&nbsp;&nbsp;&gt;&gt;&gt;&nbsp;&nbsp;&nbsp;else:<br>
+&nbsp;&nbsp;&gt;&gt;&gt;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;wl[v]&nbsp;=&nbsp;2<br>
+&nbsp;&nbsp;&gt;&gt;&gt;&nbsp;gs&nbsp;=&nbsp;GraphSet.<a href="#graphillion.GraphSet-balanced_partitions">balanced_partitions</a>(weight_list=wl,&nbsp;ratio=2,&nbsp;num_comps=2,&nbsp;lower=2)<br>
+&nbsp;&nbsp;GraphSet([[(1,&nbsp;4),&nbsp;(2,&nbsp;3),&nbsp;(3,&nbsp;6),&nbsp;(4,&nbsp;5)],&nbsp;[(1,&nbsp;4),&nbsp;(2,&nbsp;3),&nbsp;(4,&nbsp;5),&nbsp;(5,&nbsp;6)]&nbsp;...<br>
+&nbsp;<br>
+Args:<br>
+&nbsp;&nbsp;weight_list:&nbsp;Optional.&nbsp;A&nbsp;list&nbsp;of&nbsp;int.&nbsp;Vertex&nbsp;weights.<br>
+&nbsp;&nbsp;ratio:&nbsp;Optional.&nbsp;a&nbsp;floating&nbsp;point&nbsp;number&nbsp;more&nbsp;than&nbsp;or&nbsp;equal&nbsp;to&nbsp;1.0.<br>
+&nbsp;&nbsp;lower:&nbsp;Optional.&nbsp;int.&nbsp;the&nbsp;lower&nbsp;bound&nbsp;of&nbsp;the&nbsp;sum&nbsp;of&nbsp;vertex&nbsp;weights<br>
+&nbsp;&nbsp;&nbsp;&nbsp;in&nbsp;each&nbsp;connected&nbsp;component.&nbsp;(including)<br>
+&nbsp;&nbsp;upper:&nbsp;Optional.&nbsp;int.&nbsp;the&nbsp;upper&nbsp;bound&nbsp;of&nbsp;the&nbsp;sum&nbsp;of&nbsp;vertex&nbsp;weights<br>
+&nbsp;&nbsp;&nbsp;&nbsp;in&nbsp;each&nbsp;connected&nbsp;component.&nbsp;(including)<br>
+&nbsp;&nbsp;num_comps:&nbsp;Optional.&nbsp;int.&nbsp;the&nbsp;number&nbsp;of&nbsp;connected&nbsp;components.<br>
+&nbsp;<br>
+Returns:<br>
+&nbsp;&nbsp;A&nbsp;new&nbsp;GraphSet&nbsp;object.</tt></dd></dl>
+
+<dl><dt><a name="GraphSet-bicliques"><strong>bicliques</strong></a>(a, b, graphset=None)</dt><dd><tt>Returns&nbsp;a&nbsp;GraphSet&nbsp;of&nbsp;(a,&nbsp;b)-bicliques&nbsp;((a,&nbsp;b)-complete&nbsp;bipartite&nbsp;graphs).<br>
+Currently,&nbsp;the&nbsp;case&nbsp;of&nbsp;a&nbsp;==&nbsp;b&nbsp;is&nbsp;supported.<br>
+&nbsp;<br>
+This&nbsp;method&nbsp;can&nbsp;be&nbsp;parallelized&nbsp;with&nbsp;OpenMP&nbsp;by&nbsp;specifying&nbsp;the<br>
+environmental&nbsp;variable&nbsp;`OMP_NUM_THREADS`:<br>
+&nbsp;<br>
+&nbsp;&nbsp;`$&nbsp;OMP_NUM_THREADS=4&nbsp;python&nbsp;your_graphillion_script.py`<br>
+&nbsp;<br>
+Examples:<br>
+&nbsp;&nbsp;&gt;&gt;&gt;&nbsp;GraphSet.<a href="#graphillion.GraphSet-set_universe">set_universe</a>([(1,&nbsp;2),&nbsp;(1,&nbsp;3),&nbsp;(1,&nbsp;4),&nbsp;(1,&nbsp;5),&nbsp;(2,&nbsp;3),&nbsp;(2,&nbsp;4),<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;(2,&nbsp;5),&nbsp;(3,&nbsp;4),&nbsp;(3,&nbsp;5),&nbsp;(4,&nbsp;5)])<br>
+&nbsp;&nbsp;&gt;&gt;&gt;&nbsp;GraphSet.<a href="#graphillion.GraphSet-bicliques">bicliques</a>(4)<br>
+&nbsp;<br>
+Args:<br>
+&nbsp;&nbsp;a:&nbsp;An&nbsp;integer.&nbsp;&nbsp;The&nbsp;number&nbsp;of&nbsp;degrees&nbsp;of&nbsp;the&nbsp;vertices&nbsp;in&nbsp;the&nbsp;left&nbsp;part.<br>
+&nbsp;&nbsp;b:&nbsp;An&nbsp;integer.&nbsp;&nbsp;The&nbsp;number&nbsp;of&nbsp;degrees&nbsp;of&nbsp;the&nbsp;vertices&nbsp;in&nbsp;the&nbsp;right&nbsp;part.<br>
+&nbsp;&nbsp;&nbsp;&nbsp;a&nbsp;==&nbsp;b&nbsp;must&nbsp;hold.<br>
+&nbsp;<br>
+&nbsp;&nbsp;graphset:&nbsp;Optional.&nbsp;&nbsp;A&nbsp;GraphSet&nbsp;object.&nbsp;&nbsp;Cliques&nbsp;to&nbsp;be<br>
+&nbsp;&nbsp;&nbsp;&nbsp;stored&nbsp;are&nbsp;selected&nbsp;from&nbsp;this&nbsp;object.<br>
+&nbsp;<br>
+Returns:<br>
+&nbsp;&nbsp;A&nbsp;new&nbsp;GraphSet&nbsp;object.<br>
+&nbsp;<br>
+See&nbsp;Also:<br>
+&nbsp;&nbsp;<a href="#graphillion.GraphSet-graphs">graphs</a>()</tt></dd></dl>
+
+<dl><dt><a name="GraphSet-bipartite_graphs"><strong>bipartite_graphs</strong></a>(is_connected=True, graphset=None)</dt><dd><tt>Returns&nbsp;a&nbsp;GraphSet&nbsp;of&nbsp;bipartite&nbsp;subgraphs.<br>
+&nbsp;<br>
+Example:<br>
+&nbsp;&nbsp;&gt;&gt;&gt;&nbsp;GraphSet.<a href="#graphillion.GraphSet-bipartite_graphs">bipartite_graphs</a>()<br>
+&nbsp;&nbsp;GraphSet([[],&nbsp;[(1,&nbsp;4)],&nbsp;[(4,&nbsp;5)],&nbsp;[(1,&nbsp;2)],&nbsp;[(2,&nbsp;5)],&nbsp;[(2,&nbsp;3)],&nbsp;[(3,&nbsp;6)],&nbsp;[(&nbsp;...<br>
+&nbsp;<br>
+Args:<br>
+&nbsp;&nbsp;graphset:&nbsp;Optional.&nbsp;A&nbsp;GraphSet&nbsp;object.&nbsp;Subgraphs&nbsp;to&nbsp;be&nbsp;stored<br>
+&nbsp;&nbsp;&nbsp;&nbsp;are&nbsp;selected&nbsp;from&nbsp;this&nbsp;object.<br>
+&nbsp;<br>
+Returns:<br>
+&nbsp;&nbsp;A&nbsp;new&nbsp;GraphSet&nbsp;object.</tt></dd></dl>
+
+<dl><dt><a name="GraphSet-chordal_graphs"><strong>chordal_graphs</strong></a>()</dt></dl>
+
+<dl><dt><a name="GraphSet-cliques"><strong>cliques</strong></a>(k, graphset=None)</dt><dd><tt>Returns&nbsp;a&nbsp;GraphSet&nbsp;of&nbsp;k-cliques.<br>
+&nbsp;<br>
+This&nbsp;method&nbsp;can&nbsp;be&nbsp;parallelized&nbsp;with&nbsp;OpenMP&nbsp;by&nbsp;specifying&nbsp;the<br>
+environmental&nbsp;variable&nbsp;`OMP_NUM_THREADS`:<br>
+&nbsp;<br>
+&nbsp;&nbsp;`$&nbsp;OMP_NUM_THREADS=4&nbsp;python&nbsp;your_graphillion_script.py`<br>
+&nbsp;<br>
+Examples:<br>
+&nbsp;&nbsp;&gt;&gt;&gt;&nbsp;GraphSet.<a href="#graphillion.GraphSet-set_universe">set_universe</a>([(1,&nbsp;2),&nbsp;(1,&nbsp;3),&nbsp;(1,&nbsp;4),&nbsp;(1,&nbsp;5),&nbsp;(2,&nbsp;3),&nbsp;(2,&nbsp;4),<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;(2,&nbsp;5),&nbsp;(3,&nbsp;4),&nbsp;(3,&nbsp;5),&nbsp;(4,&nbsp;5)])<br>
+&nbsp;&nbsp;&gt;&gt;&gt;&nbsp;GraphSet.<a href="#graphillion.GraphSet-cliques">cliques</a>(4)<br>
+&nbsp;&nbsp;GraphSet([[(1,&nbsp;2),&nbsp;(1,&nbsp;3),&nbsp;(1,&nbsp;4),&nbsp;(2,&nbsp;3),&nbsp;(2,&nbsp;4),&nbsp;(3,&nbsp;4)],&nbsp;[(1,&nbsp;2),&nbsp;(1,&nbsp;3),&nbsp;...<br>
+&nbsp;<br>
+Args:<br>
+&nbsp;&nbsp;k:&nbsp;An&nbsp;integer.&nbsp;&nbsp;The&nbsp;number&nbsp;of&nbsp;vertices&nbsp;in&nbsp;a&nbsp;clique.<br>
+&nbsp;<br>
+&nbsp;&nbsp;graphset:&nbsp;Optional.&nbsp;&nbsp;A&nbsp;GraphSet&nbsp;object.&nbsp;&nbsp;Cliques&nbsp;to&nbsp;be<br>
+&nbsp;&nbsp;&nbsp;&nbsp;stored&nbsp;are&nbsp;selected&nbsp;from&nbsp;this&nbsp;object.<br>
+&nbsp;<br>
+Returns:<br>
+&nbsp;&nbsp;A&nbsp;new&nbsp;GraphSet&nbsp;object.<br>
+&nbsp;<br>
+See&nbsp;Also:<br>
+&nbsp;&nbsp;<a href="#graphillion.GraphSet-graphs">graphs</a>()</tt></dd></dl>
+
+<dl><dt><a name="GraphSet-connected_components"><strong>connected_components</strong></a>(vertices, graphset=None)</dt><dd><tt>Returns&nbsp;a&nbsp;GraphSet&nbsp;of&nbsp;connected&nbsp;components.<br>
+&nbsp;<br>
+This&nbsp;method&nbsp;can&nbsp;be&nbsp;parallelized&nbsp;with&nbsp;OpenMP&nbsp;by&nbsp;specifying&nbsp;the<br>
+environmental&nbsp;variable&nbsp;`OMP_NUM_THREADS`:<br>
+&nbsp;<br>
+&nbsp;&nbsp;`$&nbsp;OMP_NUM_THREADS=4&nbsp;python&nbsp;your_graphillion_script.py`<br>
+&nbsp;<br>
+Examples:<br>
+&nbsp;&nbsp;&gt;&gt;&gt;&nbsp;GraphSet.<a href="#graphillion.GraphSet-connected_components">connected_components</a>([1,&nbsp;3,&nbsp;5])<br>
+&nbsp;&nbsp;GraphSet([[(1,&nbsp;2),&nbsp;(2,&nbsp;3),&nbsp;(2,&nbsp;5)],&nbsp;[(1,&nbsp;2),&nbsp;(1,&nbsp;4),&nbsp;(2,&nbsp;3),&nbsp;(2,&nbsp;5)],&nbsp;[(1,&nbsp;2&nbsp;...<br>
+&nbsp;<br>
+Args:<br>
+&nbsp;&nbsp;vertices:&nbsp;A&nbsp;list&nbsp;of&nbsp;vertices&nbsp;to&nbsp;be&nbsp;connected.<br>
+&nbsp;<br>
+&nbsp;&nbsp;graphset:&nbsp;Optional.&nbsp;&nbsp;A&nbsp;GraphSet&nbsp;object.&nbsp;&nbsp;Components&nbsp;to&nbsp;be<br>
+&nbsp;&nbsp;&nbsp;&nbsp;stored&nbsp;are&nbsp;selected&nbsp;from&nbsp;this&nbsp;object.<br>
+&nbsp;<br>
+Returns:<br>
+&nbsp;&nbsp;A&nbsp;new&nbsp;GraphSet&nbsp;object.<br>
+&nbsp;<br>
+See&nbsp;Also:<br>
+&nbsp;&nbsp;<a href="#graphillion.GraphSet-graphs">graphs</a>()</tt></dd></dl>
+
+<dl><dt><a name="GraphSet-cycles"><strong>cycles</strong></a>(is_hamilton=False, graphset=None)</dt><dd><tt>Returns&nbsp;a&nbsp;GraphSet&nbsp;of&nbsp;cycles.<br>
+&nbsp;<br>
+This&nbsp;method&nbsp;can&nbsp;be&nbsp;parallelized&nbsp;with&nbsp;OpenMP&nbsp;by&nbsp;specifying&nbsp;the<br>
+environmental&nbsp;variable&nbsp;`OMP_NUM_THREADS`:<br>
+&nbsp;<br>
+&nbsp;&nbsp;`$&nbsp;OMP_NUM_THREADS=4&nbsp;python&nbsp;your_graphillion_script.py`<br>
+&nbsp;<br>
+Examples:<br>
+&nbsp;&nbsp;&gt;&gt;&gt;&nbsp;GraphSet.<a href="#graphillion.GraphSet-cycles">cycles</a>(is_hamilton=True)<br>
+&nbsp;&nbsp;GraphSet([[(1,&nbsp;2),&nbsp;(1,&nbsp;4),&nbsp;(2,&nbsp;3),&nbsp;(3,&nbsp;6),&nbsp;(4,&nbsp;5),&nbsp;(5,&nbsp;6)]])<br>
+&nbsp;<br>
+Args:<br>
+&nbsp;&nbsp;is_hamilton:&nbsp;Optional.&nbsp;&nbsp;True&nbsp;or&nbsp;False.&nbsp;&nbsp;If&nbsp;true,&nbsp;cycles&nbsp;must<br>
+&nbsp;&nbsp;&nbsp;&nbsp;be&nbsp;composed&nbsp;of&nbsp;all&nbsp;vertices.<br>
+&nbsp;<br>
+&nbsp;&nbsp;graphset:&nbsp;Optional.&nbsp;&nbsp;A&nbsp;GraphSet&nbsp;object.&nbsp;&nbsp;Cycles&nbsp;to&nbsp;be&nbsp;stored<br>
+&nbsp;&nbsp;&nbsp;&nbsp;are&nbsp;selected&nbsp;from&nbsp;this&nbsp;object.<br>
+&nbsp;<br>
+Returns:<br>
+&nbsp;&nbsp;A&nbsp;new&nbsp;GraphSet&nbsp;object.<br>
+&nbsp;<br>
+See&nbsp;Also:<br>
+&nbsp;&nbsp;<a href="#graphillion.GraphSet-graphs">graphs</a>()</tt></dd></dl>
+
+<dl><dt><a name="GraphSet-degree_distribution_graphs"><strong>degree_distribution_graphs</strong></a>(deg_dist, is_connected, graphset=None)</dt><dd><tt>Returns&nbsp;a&nbsp;GraphSet&nbsp;having&nbsp;specified&nbsp;degree&nbsp;distribution.<br>
+&nbsp;<br>
+Examples:<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&gt;&gt;&gt;&nbsp;GraphSet.<a href="#graphillion.GraphSet-set_universe">set_universe</a>([(1,&nbsp;2),&nbsp;(1,&nbsp;4),&nbsp;(2,&nbsp;3),<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;(2,&nbsp;5),&nbsp;(3,&nbsp;6),&nbsp;(4,&nbsp;5),<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;(5,&nbsp;6)])<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&gt;&gt;&gt;&nbsp;deg_dist&nbsp;=&nbsp;{0:&nbsp;GraphSet.DegreeDistribution_Any,<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;1:&nbsp;2,&nbsp;2:&nbsp;1}<br>
+&nbsp;&nbsp;&nbsp;&nbsp;#&nbsp;This&nbsp;means&nbsp;that&nbsp;each&nbsp;subgraph&nbsp;has&nbsp;2&nbsp;vertices&nbsp;with&nbsp;degree&nbsp;1,<br>
+&nbsp;&nbsp;&nbsp;&nbsp;#&nbsp;1&nbsp;vertex&nbsp;with&nbsp;degree&nbsp;2,&nbsp;and&nbsp;any&nbsp;number&nbsp;of&nbsp;vertices&nbsp;with<br>
+&nbsp;&nbsp;&nbsp;&nbsp;#&nbsp;degree&nbsp;0.<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&gt;&gt;&gt;&nbsp;gs&nbsp;=&nbsp;GraphSet.<a href="#graphillion.GraphSet-degree_distribution_graphs">degree_distribution_graphs</a>(deg_dist,&nbsp;True)<br>
+Args:<br>
+&nbsp;&nbsp;deg_dist:&nbsp;dictionary&nbsp;whose&nbsp;key&nbsp;and&nbsp;value&nbsp;mean&nbsp;that<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;each&nbsp;subgraph&nbsp;has&nbsp;'value'&nbsp;number&nbsp;of&nbsp;vertices<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;with&nbsp;degree&nbsp;'key'.&nbsp;If&nbsp;the&nbsp;value&nbsp;is<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;GraphSet.DegreeDistribution_Any,&nbsp;it&nbsp;means&nbsp;that<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;each&nbsp;subgraph&nbsp;has&nbsp;any&nbsp;number&nbsp;of&nbsp;vertices<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;with&nbsp;degree&nbsp;'key'.<br>
+&nbsp;&nbsp;connected:&nbsp;Each&nbsp;subgraph&nbsp;is&nbsp;connected&nbsp;if&nbsp;True.<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Each&nbsp;subgraph&nbsp;is&nbsp;not&nbsp;necessarily&nbsp;connected&nbsp;if&nbsp;False.<br>
+&nbsp;<br>
+Returns:<br>
+&nbsp;&nbsp;&nbsp;&nbsp;A&nbsp;new&nbsp;GraphSet&nbsp;object.</tt></dd></dl>
+
+<dl><dt><a name="GraphSet-f_factors"><strong>f_factors</strong></a>(f, graphset=None)</dt><dd><tt>Returns&nbsp;a&nbsp;GraphSet&nbsp;of&nbsp;f-factors.<br>
+For&nbsp;a&nbsp;function&nbsp;f&nbsp;that&nbsp;maps&nbsp;from&nbsp;a&nbsp;vertex&nbsp;to&nbsp;an&nbsp;integer,<br>
+an&nbsp;f-factor&nbsp;is&nbsp;a&nbsp;set&nbsp;of&nbsp;edges&nbsp;such&nbsp;that&nbsp;each&nbsp;vertex&nbsp;v&nbsp;is&nbsp;incident<br>
+to&nbsp;exactly&nbsp;f(v)&nbsp;edges&nbsp;of&nbsp;the&nbsp;f-factor.<br>
+&nbsp;<br>
+This&nbsp;method&nbsp;can&nbsp;be&nbsp;parallelized&nbsp;with&nbsp;OpenMP&nbsp;by&nbsp;specifying&nbsp;the<br>
+environmental&nbsp;variable&nbsp;`OMP_NUM_THREADS`:<br>
+&nbsp;<br>
+&nbsp;&nbsp;`$&nbsp;OMP_NUM_THREADS=4&nbsp;python&nbsp;your_graphillion_script.py`<br>
+&nbsp;<br>
+Examples:<br>
+&nbsp;&nbsp;&gt;&gt;&gt;&nbsp;f&nbsp;=&nbsp;{}<br>
+&nbsp;&nbsp;#&nbsp;vertices&nbsp;is&nbsp;a&nbsp;list&nbsp;of&nbsp;vertices&nbsp;in&nbsp;the&nbsp;universe<br>
+&nbsp;&nbsp;&gt;&gt;&gt;&nbsp;for&nbsp;v&nbsp;in&nbsp;vertices:<br>
+&nbsp;&nbsp;&gt;&gt;&gt;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;f[v]&nbsp;=&nbsp;1&nbsp;if&nbsp;f&nbsp;==&nbsp;1&nbsp;else&nbsp;2<br>
+&nbsp;&nbsp;&gt;&gt;&gt;&nbsp;GraphSet.<a href="#graphillion.GraphSet-f_factors">f_factors</a>(f)<br>
+&nbsp;<br>
+Args:<br>
+&nbsp;&nbsp;f:&nbsp;Dictionary.&nbsp;A&nbsp;key&nbsp;is&nbsp;a&nbsp;vertex&nbsp;of&nbsp;the&nbsp;universe&nbsp;graph&nbsp;and&nbsp;a&nbsp;value<br>
+&nbsp;&nbsp;&nbsp;&nbsp;is&nbsp;an&nbsp;integer.&nbsp;For&nbsp;a&nbsp;vertex&nbsp;v,&nbsp;if&nbsp;f[v]&nbsp;is&nbsp;undefined,&nbsp;it&nbsp;means&nbsp;f[v]&nbsp;==&nbsp;0.<br>
+&nbsp;&nbsp;graphset:&nbsp;Optional.&nbsp;&nbsp;A&nbsp;GraphSet&nbsp;object.&nbsp;&nbsp;Matchings&nbsp;to&nbsp;be&nbsp;stored<br>
+&nbsp;&nbsp;&nbsp;&nbsp;are&nbsp;selected&nbsp;from&nbsp;this&nbsp;object.<br>
+&nbsp;<br>
+Returns:<br>
+&nbsp;&nbsp;A&nbsp;new&nbsp;GraphSet&nbsp;object.<br>
+&nbsp;<br>
+See&nbsp;Also:<br>
+&nbsp;&nbsp;<a href="#graphillion.GraphSet-graphs">graphs</a>()</tt></dd></dl>
+
+<dl><dt><a name="GraphSet-forbidden_induced_subgraphs"><strong>forbidden_induced_subgraphs</strong></a>(forbidden_graphset=None)</dt><dd><tt>Returns&nbsp;a&nbsp;GraphSet&nbsp;characterized&nbsp;by&nbsp;forbidden&nbsp;induced&nbsp;subgraphs.<br>
+&nbsp;<br>
+Examples:<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&gt;&gt;&gt;&nbsp;GraphSet.<a href="#graphillion.GraphSet-forbidden_induced_subgraphs">forbidden_induced_subgraphs</a>(GraphSet.<a href="#graphillion.GraphSet-cycles">cycles</a>())<br>
+&nbsp;<br>
+Returns:<br>
+&nbsp;&nbsp;&nbsp;&nbsp;A&nbsp;new&nbsp;GraphSet&nbsp;object.</tt></dd></dl>
+
+<dl><dt><a name="GraphSet-forests"><strong>forests</strong></a>(roots, is_spanning=False, graphset=None)</dt><dd><tt>Returns&nbsp;a&nbsp;GraphSet&nbsp;of&nbsp;forests,&nbsp;sets&nbsp;of&nbsp;trees.<br>
+&nbsp;<br>
+This&nbsp;method&nbsp;can&nbsp;be&nbsp;parallelized&nbsp;with&nbsp;OpenMP&nbsp;by&nbsp;specifying&nbsp;the<br>
+environmental&nbsp;variable&nbsp;`OMP_NUM_THREADS`:<br>
+&nbsp;<br>
+&nbsp;&nbsp;`$&nbsp;OMP_NUM_THREADS=4&nbsp;python&nbsp;your_graphillion_script.py`<br>
+&nbsp;<br>
+Examples:<br>
+&nbsp;&nbsp;&gt;&gt;&gt;&nbsp;GraphSet.<a href="#graphillion.GraphSet-forests">forests</a>([1,&nbsp;6])<br>
+&nbsp;&nbsp;GraphSet([[],&nbsp;[(1,&nbsp;2)],&nbsp;[(1,&nbsp;4)],&nbsp;[(3,&nbsp;6)],&nbsp;[(5,&nbsp;6)],&nbsp;[(1,&nbsp;2),&nbsp;(1,&nbsp;4)],&nbsp;[(1,&nbsp;...<br>
+&nbsp;<br>
+Args:<br>
+&nbsp;&nbsp;roots:&nbsp;Optional.&nbsp;&nbsp;A&nbsp;list&nbsp;of&nbsp;vertices,&nbsp;at&nbsp;which&nbsp;trees&nbsp;are<br>
+&nbsp;&nbsp;&nbsp;&nbsp;rooted.<br>
+&nbsp;<br>
+&nbsp;&nbsp;is_spanning:&nbsp;Optional.&nbsp;&nbsp;True&nbsp;or&nbsp;False.&nbsp;&nbsp;If&nbsp;true,&nbsp;forests&nbsp;must<br>
+&nbsp;&nbsp;&nbsp;&nbsp;be&nbsp;composed&nbsp;of&nbsp;all&nbsp;vertices.<br>
+&nbsp;<br>
+&nbsp;&nbsp;graphset:&nbsp;Optional.&nbsp;&nbsp;A&nbsp;GraphSet&nbsp;object.&nbsp;&nbsp;Forests&nbsp;to&nbsp;be&nbsp;stored<br>
+&nbsp;&nbsp;&nbsp;&nbsp;are&nbsp;selected&nbsp;from&nbsp;this&nbsp;object.<br>
+&nbsp;<br>
+Returns:<br>
+&nbsp;&nbsp;A&nbsp;new&nbsp;GraphSet&nbsp;object.<br>
+&nbsp;<br>
+See&nbsp;Also:<br>
+&nbsp;&nbsp;<a href="#graphillion.GraphSet-graphs">graphs</a>()</tt></dd></dl>
+
+<dl><dt><a name="GraphSet-graphs"><strong>graphs</strong></a>(vertex_groups=None, degree_constraints=None, num_edges=None, no_loop=False, graphset=None, linear_constraints=None)</dt><dd><tt>Returns&nbsp;a&nbsp;GraphSet&nbsp;with&nbsp;graphs&nbsp;under&nbsp;given&nbsp;constraints.<br>
+&nbsp;<br>
+This&nbsp;is&nbsp;the&nbsp;base&nbsp;method&nbsp;for&nbsp;specific&nbsp;graph&nbsp;classes,&nbsp;e.g.,<br>
+paths&nbsp;and&nbsp;trees.<br>
+&nbsp;<br>
+This&nbsp;method&nbsp;can&nbsp;be&nbsp;parallelized&nbsp;with&nbsp;OpenMP&nbsp;by&nbsp;specifying&nbsp;the<br>
+environmental&nbsp;variable&nbsp;`OMP_NUM_THREADS`:<br>
+&nbsp;<br>
+&nbsp;&nbsp;`$&nbsp;OMP_NUM_THREADS=4&nbsp;python&nbsp;your_graphillion_script.py`<br>
+&nbsp;<br>
+Examples:&nbsp;a&nbsp;set&nbsp;of&nbsp;paths&nbsp;from&nbsp;vertex&nbsp;1&nbsp;to&nbsp;vertex&nbsp;6<br>
+&nbsp;&nbsp;&gt;&gt;&gt;&nbsp;start&nbsp;=&nbsp;1<br>
+&nbsp;&nbsp;&gt;&gt;&gt;&nbsp;end&nbsp;=&nbsp;6<br>
+&nbsp;&nbsp;&gt;&gt;&gt;&nbsp;zero_or_two&nbsp;=&nbsp;range(0,&nbsp;3,&nbsp;2)<br>
+&nbsp;&nbsp;&gt;&gt;&gt;&nbsp;degree_constraints&nbsp;=&nbsp;{start:&nbsp;1,&nbsp;end:&nbsp;1,<br>
+&nbsp;&nbsp;...&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;2:&nbsp;zero_or_two,&nbsp;3:&nbsp;zero_or_two,<br>
+&nbsp;&nbsp;...&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;4:&nbsp;zero_or_two,&nbsp;5:&nbsp;zero_or_two}<br>
+&nbsp;&nbsp;&gt;&gt;&gt;&nbsp;GraphSet.<a href="#graphillion.GraphSet-graphs">graphs</a>(vertex_groups=[[start,&nbsp;end]],<br>
+&nbsp;&nbsp;...&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;degree_constraints=degree_constraints,<br>
+&nbsp;&nbsp;...&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;no_loop=True)<br>
+&nbsp;&nbsp;GraphSet([[(1,&nbsp;2),&nbsp;(2,&nbsp;3),&nbsp;(3,&nbsp;6)],&nbsp;[(1,&nbsp;2),&nbsp;(2,&nbsp;5),&nbsp;(5,&nbsp;6)],&nbsp;[(1,&nbsp;4),&nbsp;(4,&nbsp;5&nbsp;...<br>
+&nbsp;<br>
+Args:<br>
+&nbsp;&nbsp;vertex_groups:&nbsp;Optional.&nbsp;&nbsp;A&nbsp;nested&nbsp;list.&nbsp;&nbsp;Vertices&nbsp;in&nbsp;an<br>
+&nbsp;&nbsp;&nbsp;&nbsp;inner&nbsp;list&nbsp;are&nbsp;connected&nbsp;while&nbsp;those&nbsp;in&nbsp;different&nbsp;inner<br>
+&nbsp;&nbsp;&nbsp;&nbsp;lists&nbsp;are&nbsp;disconnected.&nbsp;&nbsp;For&nbsp;`[[1,&nbsp;5],&nbsp;[3]]`,&nbsp;1&nbsp;and&nbsp;5&nbsp;are<br>
+&nbsp;&nbsp;&nbsp;&nbsp;connected,&nbsp;while&nbsp;they&nbsp;are&nbsp;not&nbsp;connected&nbsp;with&nbsp;3.<br>
+&nbsp;<br>
+&nbsp;&nbsp;degree_constraints:&nbsp;Optional.&nbsp;&nbsp;A&nbsp;dict&nbsp;with&nbsp;a&nbsp;vertex&nbsp;and&nbsp;a<br>
+&nbsp;&nbsp;&nbsp;&nbsp;range&nbsp;or&nbsp;int.&nbsp;&nbsp;The&nbsp;degree&nbsp;of&nbsp;a&nbsp;vertex&nbsp;is&nbsp;restricted&nbsp;by&nbsp;the<br>
+&nbsp;&nbsp;&nbsp;&nbsp;range.&nbsp;&nbsp;For&nbsp;`{1:&nbsp;2,&nbsp;6:&nbsp;range(2)}`,&nbsp;the&nbsp;degree&nbsp;of&nbsp;vertex&nbsp;1<br>
+&nbsp;&nbsp;&nbsp;&nbsp;is&nbsp;2&nbsp;and&nbsp;that&nbsp;of&nbsp;6&nbsp;is&nbsp;less&nbsp;than&nbsp;2,&nbsp;while&nbsp;others&nbsp;are&nbsp;not<br>
+&nbsp;&nbsp;&nbsp;&nbsp;cared.<br>
+&nbsp;<br>
+&nbsp;&nbsp;num_edges:&nbsp;Optional.&nbsp;&nbsp;A&nbsp;range&nbsp;or&nbsp;int.&nbsp;&nbsp;This&nbsp;argument<br>
+&nbsp;&nbsp;&nbsp;&nbsp;specifies&nbsp;the&nbsp;number&nbsp;of&nbsp;edges&nbsp;used&nbsp;in&nbsp;graphs&nbsp;to&nbsp;be&nbsp;stored.<br>
+&nbsp;&nbsp;&nbsp;&nbsp;For&nbsp;`range(5)`,&nbsp;less&nbsp;than&nbsp;5&nbsp;edges&nbsp;can&nbsp;be&nbsp;used.<br>
+&nbsp;<br>
+&nbsp;&nbsp;no_loop:&nbsp;Optional.&nbsp;&nbsp;True&nbsp;or&nbsp;False.&nbsp;&nbsp;This&nbsp;argument&nbsp;specifies<br>
+&nbsp;&nbsp;&nbsp;&nbsp;if&nbsp;loop&nbsp;is&nbsp;not&nbsp;allowed.<br>
+&nbsp;<br>
+&nbsp;&nbsp;graphset:&nbsp;Optional.&nbsp;&nbsp;A&nbsp;GraphSet&nbsp;object.&nbsp;&nbsp;Graphs&nbsp;to&nbsp;be&nbsp;stored<br>
+&nbsp;&nbsp;&nbsp;&nbsp;are&nbsp;selected&nbsp;from&nbsp;this&nbsp;object.<br>
+&nbsp;<br>
+&nbsp;&nbsp;linear_constraints:&nbsp;Optional.&nbsp;&nbsp;A&nbsp;list&nbsp;of&nbsp;linear&nbsp;constraints.<br>
+&nbsp;&nbsp;&nbsp;&nbsp;A&nbsp;linear&nbsp;constraint&nbsp;consists&nbsp;of&nbsp;weighted&nbsp;edges&nbsp;and<br>
+&nbsp;&nbsp;&nbsp;&nbsp;lower/upper&nbsp;bounds.&nbsp;&nbsp;An&nbsp;edge&nbsp;weight&nbsp;is&nbsp;a&nbsp;positive&nbsp;or<br>
+&nbsp;&nbsp;&nbsp;&nbsp;negative&nbsp;number,&nbsp;which&nbsp;defaults&nbsp;to&nbsp;1.&nbsp;&nbsp;Weights&nbsp;of&nbsp;the&nbsp;edges<br>
+&nbsp;&nbsp;&nbsp;&nbsp;that&nbsp;are&nbsp;not&nbsp;included&nbsp;in&nbsp;the&nbsp;constraint&nbsp;are&nbsp;zeros.&nbsp;&nbsp;For<br>
+&nbsp;&nbsp;&nbsp;&nbsp;instance,&nbsp;`linear_constraints=[([(1,&nbsp;2,&nbsp;0.6),&nbsp;(2,&nbsp;5),<br>
+&nbsp;&nbsp;&nbsp;&nbsp;(3,&nbsp;6,&nbsp;1.2)],&nbsp;(1.5,&nbsp;2.0))]`,&nbsp;feasible&nbsp;graph&nbsp;weights&nbsp;are<br>
+&nbsp;&nbsp;&nbsp;&nbsp;between&nbsp;1.5&nbsp;and&nbsp;2.0,&nbsp;e.g.,&nbsp;`[(1,&nbsp;2),&nbsp;(2,&nbsp;3),&nbsp;(3,&nbsp;6)]`&nbsp;or<br>
+&nbsp;&nbsp;&nbsp;&nbsp;`[(1,&nbsp;2),&nbsp;(2,&nbsp;5),&nbsp;(5,&nbsp;6)]`.<br>
+&nbsp;&nbsp;&nbsp;&nbsp;See&nbsp;graphillion/test/graphset.py&nbsp;in&nbsp;detail.<br>
+&nbsp;<br>
+Returns:<br>
+&nbsp;&nbsp;A&nbsp;new&nbsp;GraphSet&nbsp;object.<br>
+&nbsp;<br>
+See&nbsp;Also:<br>
+&nbsp;&nbsp;<a href="#graphillion.GraphSet-connected_components">connected_components</a>(),&nbsp;<a href="#graphillion.GraphSet-cliques">cliques</a>(),&nbsp;<a href="#graphillion.GraphSet-trees">trees</a>(),&nbsp;<a href="#graphillion.GraphSet-forests">forests</a>(),<br>
+&nbsp;&nbsp;<a href="#graphillion.GraphSet-cycles">cycles</a>(),&nbsp;<a href="#graphillion.GraphSet-paths">paths</a>()</tt></dd></dl>
+
+<dl><dt><a name="GraphSet-induced_graphs"><strong>induced_graphs</strong></a>()</dt><dd><tt>Return&nbsp;a&nbsp;GraphSet&nbsp;with&nbsp;connected&nbsp;induced&nbsp;graphs.<br>
+&nbsp;<br>
+Example:&nbsp;all&nbsp;connected&nbsp;induced&nbsp;graphs&nbsp;(more&nbsp;than&nbsp;a&nbsp;vertex)<br>
+&nbsp;&nbsp;&gt;&gt;&gt;&nbsp;gs&nbsp;=&nbsp;GraphSet.<a href="#graphillion.GraphSet-induced_graphs">induced_graphs</a>()<br>
+&nbsp;&nbsp;GraphSet([[(1,&nbsp;2),&nbsp;(1,&nbsp;4),&nbsp;(2,&nbsp;3),&nbsp;(2,&nbsp;5),&nbsp;(3,&nbsp;6),&nbsp;(4,&nbsp;5),&nbsp;(5,&nbsp;6)],<br>
+&nbsp;&nbsp;[(1,&nbsp;2),&nbsp;(1,&nbsp;4),&nbsp;(2,&nbsp;3),&nbsp;(2,&nbsp;5),&nbsp;(4,&nbsp;5)],&nbsp;[(1,&nbsp;2),&nbsp;(1,&nbsp;4),&nbsp;(2,&nbsp;5),&nbsp;(4,&nbsp;5),&nbsp;(5,&nbsp;6)]]&nbsp;...<br>
+&nbsp;<br>
+Returns:<br>
+&nbsp;&nbsp;A&nbsp;new&nbsp;GraphSet&nbsp;Object.</tt></dd></dl>
+
+<dl><dt><a name="GraphSet-k_factors"><strong>k_factors</strong></a>(k, graphset=None)</dt><dd><tt>Returns&nbsp;a&nbsp;GraphSet&nbsp;of&nbsp;k-factors.<br>
+A&nbsp;k-factor&nbsp;is&nbsp;a&nbsp;set&nbsp;of&nbsp;edges&nbsp;such&nbsp;that&nbsp;each&nbsp;vertex&nbsp;is&nbsp;incident<br>
+to&nbsp;exactly&nbsp;k&nbsp;edges&nbsp;of&nbsp;the&nbsp;k-factor.<br>
+&nbsp;<br>
+This&nbsp;method&nbsp;can&nbsp;be&nbsp;parallelized&nbsp;with&nbsp;OpenMP&nbsp;by&nbsp;specifying&nbsp;the<br>
+environmental&nbsp;variable&nbsp;`OMP_NUM_THREADS`:<br>
+&nbsp;<br>
+&nbsp;&nbsp;`$&nbsp;OMP_NUM_THREADS=4&nbsp;python&nbsp;your_graphillion_script.py`<br>
+&nbsp;<br>
+Examples:<br>
+&nbsp;&nbsp;&gt;&gt;&gt;&nbsp;GraphSet.<a href="#graphillion.GraphSet-k_factors">k_factors</a>(3)<br>
+&nbsp;<br>
+Args:<br>
+&nbsp;&nbsp;k:&nbsp;Integer.&nbsp;Each&nbsp;vertex&nbsp;is&nbsp;incident&nbsp;to&nbsp;exactly&nbsp;k&nbsp;edges.<br>
+&nbsp;&nbsp;graphset:&nbsp;Optional.&nbsp;&nbsp;A&nbsp;GraphSet&nbsp;object.&nbsp;&nbsp;Matchings&nbsp;to&nbsp;be&nbsp;stored<br>
+&nbsp;&nbsp;&nbsp;&nbsp;are&nbsp;selected&nbsp;from&nbsp;this&nbsp;object.<br>
+&nbsp;<br>
+Returns:<br>
+&nbsp;&nbsp;A&nbsp;new&nbsp;GraphSet&nbsp;object.<br>
+&nbsp;<br>
+See&nbsp;Also:<br>
+&nbsp;&nbsp;<a href="#graphillion.GraphSet-graphs">graphs</a>()</tt></dd></dl>
+
+<dl><dt><a name="GraphSet-k_matchings"><strong>k_matchings</strong></a>(k, graphset=None)</dt><dd><tt>Returns&nbsp;a&nbsp;GraphSet&nbsp;of&nbsp;k-matchings.<br>
+A&nbsp;k-matching&nbsp;is&nbsp;a&nbsp;set&nbsp;of&nbsp;edges&nbsp;such&nbsp;that&nbsp;each&nbsp;vertex&nbsp;is&nbsp;incident<br>
+to&nbsp;at&nbsp;most&nbsp;k&nbsp;edges&nbsp;of&nbsp;the&nbsp;k-matching.<br>
+&nbsp;<br>
+This&nbsp;method&nbsp;can&nbsp;be&nbsp;parallelized&nbsp;with&nbsp;OpenMP&nbsp;by&nbsp;specifying&nbsp;the<br>
+environmental&nbsp;variable&nbsp;`OMP_NUM_THREADS`:<br>
+&nbsp;<br>
+&nbsp;&nbsp;`$&nbsp;OMP_NUM_THREADS=4&nbsp;python&nbsp;your_graphillion_script.py`<br>
+&nbsp;<br>
+Examples:<br>
+&nbsp;&nbsp;&gt;&gt;&gt;&nbsp;GraphSet.<a href="#graphillion.GraphSet-k_matchings">k_matchings</a>(3)<br>
+&nbsp;<br>
+Args:<br>
+&nbsp;&nbsp;k:&nbsp;Integer.&nbsp;Each&nbsp;vertex&nbsp;is&nbsp;incident&nbsp;to&nbsp;at&nbsp;most&nbsp;k&nbsp;edges.<br>
+&nbsp;&nbsp;graphset:&nbsp;Optional.&nbsp;&nbsp;A&nbsp;GraphSet&nbsp;object.&nbsp;&nbsp;Matchings&nbsp;to&nbsp;be&nbsp;stored<br>
+&nbsp;&nbsp;&nbsp;&nbsp;are&nbsp;selected&nbsp;from&nbsp;this&nbsp;object.<br>
+&nbsp;<br>
+Returns:<br>
+&nbsp;&nbsp;A&nbsp;new&nbsp;GraphSet&nbsp;object.<br>
+&nbsp;<br>
+See&nbsp;Also:<br>
+&nbsp;&nbsp;<a href="#graphillion.GraphSet-graphs">graphs</a>()</tt></dd></dl>
+
+<dl><dt><a name="GraphSet-letter_P_graphs"><strong>letter_P_graphs</strong></a>(graphset=None)</dt><dd><tt>Returns&nbsp;a&nbsp;GraphSet&nbsp;whose&nbsp;shape&nbsp;looks&nbsp;like&nbsp;letter&nbsp;'P'.<br>
+&nbsp;&nbsp;&nbsp;&nbsp;That&nbsp;is,&nbsp;each&nbsp;subgraph&nbsp;has&nbsp;one&nbsp;vertex&nbsp;with&nbsp;degree&nbsp;1,<br>
+&nbsp;&nbsp;&nbsp;&nbsp;one&nbsp;vertex&nbsp;with&nbsp;degree&nbsp;3,&nbsp;and&nbsp;any&nbsp;number&nbsp;of&nbsp;vertices&nbsp;with<br>
+&nbsp;&nbsp;&nbsp;&nbsp;degree&nbsp;2,&nbsp;and&nbsp;is&nbsp;connected.<br>
+&nbsp;<br>
+Examples:<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&gt;&gt;&gt;&nbsp;gs&nbsp;=&nbsp;GraphSet.<a href="#graphillion.GraphSet-letter_P_graphs">letter_P_graphs</a>()<br>
+&nbsp;<br>
+Returns:<br>
+&nbsp;&nbsp;&nbsp;&nbsp;A&nbsp;new&nbsp;GraphSet&nbsp;object.</tt></dd></dl>
+
+<dl><dt><a name="GraphSet-load"><strong>load</strong></a>(fp)</dt><dd><tt>Deserialize&nbsp;a&nbsp;file&nbsp;`fp`&nbsp;to&nbsp;`self`.<br>
+&nbsp;<br>
+This&nbsp;method&nbsp;does&nbsp;not&nbsp;deserialize&nbsp;the&nbsp;universe,&nbsp;which&nbsp;should&nbsp;be<br>
+loaded&nbsp;separately&nbsp;by&nbsp;pickle.<br>
+&nbsp;<br>
+Args:<br>
+&nbsp;&nbsp;fp:&nbsp;A&nbsp;read-supporting&nbsp;file-like&nbsp;object.<br>
+&nbsp;<br>
+Examples:<br>
+&nbsp;&nbsp;&gt;&gt;&gt;&nbsp;import&nbsp;pickle<br>
+&nbsp;&nbsp;&gt;&gt;&gt;&nbsp;fp&nbsp;=&nbsp;open('/path/to/universe')<br>
+&nbsp;&nbsp;&gt;&gt;&gt;&nbsp;GraphSet.<a href="#graphillion.GraphSet-set_universe">set_universe</a>(pickle.<a href="#graphillion.GraphSet-load">load</a>(fp),&nbsp;traversal='as-is')<br>
+&nbsp;&nbsp;&gt;&gt;&gt;&nbsp;fp&nbsp;=&nbsp;open('/path/to/graphset')<br>
+&nbsp;&nbsp;&gt;&gt;&gt;&nbsp;gs&nbsp;=&nbsp;GraphSet.<a href="#graphillion.GraphSet-load">load</a>(fp)<br>
+&nbsp;<br>
+See&nbsp;Also:<br>
+&nbsp;&nbsp;<a href="#graphillion.GraphSet-loads">loads</a>(),&nbsp;<a href="#graphillion.GraphSet-dump">dump</a>()</tt></dd></dl>
+
+<dl><dt><a name="GraphSet-loads"><strong>loads</strong></a>(s)</dt><dd><tt>Deserialize&nbsp;`s`&nbsp;to&nbsp;`self`.<br>
+&nbsp;<br>
+This&nbsp;method&nbsp;does&nbsp;not&nbsp;deserialize&nbsp;the&nbsp;universe,&nbsp;which&nbsp;should&nbsp;be<br>
+loaded&nbsp;separately&nbsp;by&nbsp;pickle.<br>
+&nbsp;<br>
+Args:<br>
+&nbsp;&nbsp;s:&nbsp;A&nbsp;string&nbsp;instance.<br>
+&nbsp;<br>
+Examples:<br>
+&nbsp;&nbsp;&gt;&gt;&gt;&nbsp;import&nbsp;pickle<br>
+&nbsp;&nbsp;&gt;&gt;&gt;&nbsp;GraphSet.<a href="#graphillion.GraphSet-set_universe">set_universe</a>(pickle.<a href="#graphillion.GraphSet-loads">loads</a>(universe_str),&nbsp;traversal='as-is')<br>
+&nbsp;&nbsp;&gt;&gt;&gt;&nbsp;gs&nbsp;=&nbsp;GraphSet.<a href="#graphillion.GraphSet-load">load</a>(graphset_str)<br>
+&nbsp;<br>
+See&nbsp;Also:<br>
+&nbsp;&nbsp;<a href="#graphillion.GraphSet-load">load</a>(),&nbsp;<a href="#graphillion.GraphSet-dumps">dumps</a>()</tt></dd></dl>
+
+<dl><dt><a name="GraphSet-matchings"><strong>matchings</strong></a>(graphset=None)</dt><dd><tt>Returns&nbsp;a&nbsp;GraphSet&nbsp;of&nbsp;matchings.<br>
+&nbsp;<br>
+This&nbsp;method&nbsp;can&nbsp;be&nbsp;parallelized&nbsp;with&nbsp;OpenMP&nbsp;by&nbsp;specifying&nbsp;the<br>
+environmental&nbsp;variable&nbsp;`OMP_NUM_THREADS`:<br>
+&nbsp;<br>
+&nbsp;&nbsp;`$&nbsp;OMP_NUM_THREADS=4&nbsp;python&nbsp;your_graphillion_script.py`<br>
+&nbsp;<br>
+Examples:<br>
+&nbsp;&nbsp;&gt;&gt;&gt;&nbsp;GraphSet.<a href="#graphillion.GraphSet-matchings">matchings</a>()<br>
+&nbsp;&nbsp;GraphSet([[],&nbsp;[(1,&nbsp;4)],&nbsp;[(4,&nbsp;5)],&nbsp;[(1,&nbsp;2)],&nbsp;[(2,&nbsp;5)],&nbsp;[(2,&nbsp;3)],&nbsp;[(3,&nbsp;6)],&nbsp;[(&nbsp;...<br>
+&nbsp;<br>
+Args:<br>
+&nbsp;&nbsp;graphset:&nbsp;Optional.&nbsp;&nbsp;A&nbsp;GraphSet&nbsp;object.&nbsp;&nbsp;Matchings&nbsp;to&nbsp;be&nbsp;stored<br>
+&nbsp;&nbsp;&nbsp;&nbsp;are&nbsp;selected&nbsp;from&nbsp;this&nbsp;object.<br>
+&nbsp;<br>
+Returns:<br>
+&nbsp;&nbsp;A&nbsp;new&nbsp;GraphSet&nbsp;object.<br>
+&nbsp;<br>
+See&nbsp;Also:<br>
+&nbsp;&nbsp;<a href="#graphillion.GraphSet-graphs">graphs</a>()</tt></dd></dl>
+
+<dl><dt><a name="GraphSet-partitions"><strong>partitions</strong></a>(num_comp_lb=1, num_comp_ub=32767)</dt><dd><tt>Returns&nbsp;a&nbsp;GraphSet&nbsp;with&nbsp;partitions&nbsp;of&nbsp;the&nbsp;graph.<br>
+Examples:&nbsp;partitions&nbsp;with&nbsp;two&nbsp;or&nbsp;three&nbsp;connected&nbsp;components.<br>
+&nbsp;&nbsp;&gt;&gt;&gt;&nbsp;lb&nbsp;=&nbsp;2<br>
+&nbsp;&nbsp;&gt;&gt;&gt;&nbsp;ub&nbsp;=&nbsp;3<br>
+&nbsp;&nbsp;&gt;&gt;&gt;&nbsp;GraphSet.<a href="#graphillion.GraphSet-partitions">partitions</a>(num_comp_lb=lb,num_comp_ub=ub)<br>
+&nbsp;&nbsp;GraphSet([[(1,&nbsp;4),&nbsp;(2,&nbsp;3),&nbsp;(4,&nbsp;5)],&nbsp;[(1,&nbsp;2),&nbsp;(1,&nbsp;4),&nbsp;(2,&nbsp;3)],&nbsp;[(1,&nbsp;4),&nbsp;(3,&nbsp;6&nbsp;...<br>
+&nbsp;<br>
+Args:<br>
+&nbsp;&nbsp;num_comp_lb:&nbsp;Optional.&nbsp;int.&nbsp;the&nbsp;lower&nbsp;bound&nbsp;of&nbsp;the&nbsp;number&nbsp;of&nbsp;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;connected&nbsp;components.&nbsp;(including)<br>
+&nbsp;&nbsp;num_comp_ub:&nbsp;Optional.&nbsp;int.&nbsp;the&nbsp;upper&nbsp;bound&nbsp;of&nbsp;the&nbsp;number&nbsp;of<br>
+&nbsp;&nbsp;&nbsp;&nbsp;connected&nbsp;components.&nbsp;(including)<br>
+&nbsp;<br>
+Returns:<br>
+&nbsp;&nbsp;A&nbsp;new&nbsp;GraphSet&nbsp;object.</tt></dd></dl>
+
+<dl><dt><a name="GraphSet-paths"><strong>paths</strong></a>(terminal1=None, terminal2=None, is_hamilton=False, graphset=None)</dt><dd><tt>Returns&nbsp;a&nbsp;GraphSet&nbsp;of&nbsp;paths.<br>
+&nbsp;<br>
+This&nbsp;method&nbsp;can&nbsp;be&nbsp;parallelized&nbsp;with&nbsp;OpenMP&nbsp;by&nbsp;specifying&nbsp;the<br>
+environmental&nbsp;variable&nbsp;`OMP_NUM_THREADS`:<br>
+&nbsp;<br>
+&nbsp;&nbsp;`$&nbsp;OMP_NUM_THREADS=4&nbsp;python&nbsp;your_graphillion_script.py`<br>
+&nbsp;<br>
+Examples:<br>
+&nbsp;&nbsp;&gt;&gt;&gt;&nbsp;GraphSet.<a href="#graphillion.GraphSet-paths">paths</a>(1,&nbsp;6)<br>
+&nbsp;&nbsp;GraphSet([[(1,&nbsp;2),&nbsp;(2,&nbsp;3),&nbsp;(3,&nbsp;6)],&nbsp;[(1,&nbsp;2),&nbsp;(2,&nbsp;5),&nbsp;(5,&nbsp;6)],&nbsp;[(1,&nbsp;4),&nbsp;(4,&nbsp;5&nbsp;...<br>
+&nbsp;<br>
+Args:<br>
+&nbsp;&nbsp;terminal1&nbsp;and&nbsp;terminal2:&nbsp;Both&nbsp;end&nbsp;vertices&nbsp;of&nbsp;a&nbsp;paths.&nbsp;If&nbsp;terminal1&nbsp;!=&nbsp;None<br>
+&nbsp;&nbsp;&nbsp;&nbsp;and&nbsp;terminal2&nbsp;==&nbsp;None,&nbsp;all&nbsp;paths&nbsp;start&nbsp;from&nbsp;terminal1.<br>
+&nbsp;&nbsp;&nbsp;&nbsp;If&nbsp;terminal1&nbsp;==&nbsp;None&nbsp;and&nbsp;terminal2&nbsp;==&nbsp;None,&nbsp;Both&nbsp;end&nbsp;vertices&nbsp;are&nbsp;arbitrary.<br>
+&nbsp;<br>
+&nbsp;&nbsp;graphset:&nbsp;Optional.&nbsp;&nbsp;A&nbsp;GraphSet&nbsp;object.&nbsp;&nbsp;Paths&nbsp;to&nbsp;be&nbsp;stored<br>
+&nbsp;&nbsp;&nbsp;&nbsp;are&nbsp;selected&nbsp;from&nbsp;this&nbsp;object.<br>
+&nbsp;<br>
+Returns:<br>
+&nbsp;&nbsp;A&nbsp;new&nbsp;GraphSet&nbsp;object.<br>
+&nbsp;<br>
+See&nbsp;Also:<br>
+&nbsp;&nbsp;<a href="#graphillion.GraphSet-graphs">graphs</a>()</tt></dd></dl>
+
+<dl><dt><a name="GraphSet-perfect_matchings"><strong>perfect_matchings</strong></a>(graphset=None)</dt><dd><tt>Return&nbsp;a&nbsp;GraphSet&nbsp;of&nbsp;perfect&nbsp;matchings.<br>
+&nbsp;<br>
+This&nbsp;method&nbsp;can&nbsp;be&nbsp;parallelized&nbsp;with&nbsp;OpenMP&nbsp;by&nbsp;specifying&nbsp;the<br>
+environmental&nbsp;variable&nbsp;`OMP_NUM_THREADS`:<br>
+&nbsp;<br>
+&nbsp;&nbsp;`$&nbsp;OMP_NUM_THREADS=4&nbsp;python&nbsp;your_graphillion_script.py`<br>
+&nbsp;<br>
+Examples:<br>
+&nbsp;&nbsp;&gt;&gt;&gt;&nbsp;GraphSet.<a href="#graphillion.GraphSet-perfect_matchings">perfect_matchings</a>()<br>
+&nbsp;&nbsp;GraphSet([[(1,&nbsp;4),&nbsp;(2,&nbsp;5),&nbsp;(3,&nbsp;6)],&nbsp;[(1,&nbsp;2),&nbsp;(3,&nbsp;6),&nbsp;(4,&nbsp;5)],&nbsp;[(1,&nbsp;4),&nbsp;(2,&nbsp;3&nbsp;...<br>
+&nbsp;<br>
+Args:<br>
+&nbsp;&nbsp;graphset:&nbsp;Optional.&nbsp;&nbsp;A&nbsp;GraphSet&nbsp;object.&nbsp;Matchings&nbsp;to&nbsp;be&nbsp;stored<br>
+&nbsp;&nbsp;&nbsp;&nbsp;are&nbsp;selected&nbsp;from&nbsp;this&nbsp;object.<br>
+&nbsp;<br>
+Returns:<br>
+&nbsp;&nbsp;A&nbsp;new&nbsp;GraphSet&nbsp;object.<br>
+&nbsp;<br>
+See&nbsp;Also:<br>
+&nbsp;&nbsp;<a href="#graphillion.GraphSet-graphs">graphs</a>()</tt></dd></dl>
+
+<dl><dt><a name="GraphSet-regular_bipartite_graphs"><strong>regular_bipartite_graphs</strong></a>(degree=None, is_connected=True, graphset=None)</dt><dd><tt>Returns&nbsp;a&nbsp;GraphSet&nbsp;of&nbsp;regular&nbsp;bipartite&nbsp;subgraphs.<br>
+&nbsp;<br>
+Example:<br>
+&nbsp;&nbsp;&gt;&gt;&gt;&nbsp;GraphSet.<a href="#graphillion.GraphSet-regular_bipartite_graphs">regular_bipartite_graphs</a>()<br>
+&nbsp;<br>
+&nbsp;&nbsp;#&nbsp;The&nbsp;degree&nbsp;is&nbsp;3&nbsp;and&nbsp;the&nbsp;graphs&nbsp;are&nbsp;not&nbsp;necessarily&nbsp;connected.<br>
+&nbsp;&nbsp;&gt;&gt;&gt;&nbsp;GraphSet.<a href="#graphillion.GraphSet-regular_graphs">regular_graphs</a>(3,&nbsp;False)<br>
+&nbsp;<br>
+&nbsp;&nbsp;#&nbsp;The&nbsp;degree&nbsp;is&nbsp;at&nbsp;least&nbsp;2&nbsp;and&nbsp;at&nbsp;most&nbsp;5,&nbsp;and<br>
+&nbsp;&nbsp;#&nbsp;the&nbsp;graphs&nbsp;are&nbsp;connected.<br>
+&nbsp;&nbsp;&gt;&gt;&gt;&nbsp;GraphSet.<a href="#graphillion.GraphSet-regular_graphs">regular_graphs</a>((2,&nbsp;5),&nbsp;True)<br>
+&nbsp;<br>
+Args:<br>
+&nbsp;&nbsp;degree:&nbsp;Tuple&nbsp;or&nbsp;Integer.&nbsp;If&nbsp;it&nbsp;is&nbsp;a&nbsp;tuple&nbsp;(l,&nbsp;u),<br>
+&nbsp;&nbsp;&nbsp;&nbsp;the&nbsp;degree&nbsp;is&nbsp;at&nbsp;least&nbsp;l&nbsp;and&nbsp;at&nbsp;most&nbsp;u.<br>
+&nbsp;&nbsp;&nbsp;&nbsp;If&nbsp;it&nbsp;is&nbsp;an&nbsp;integer&nbsp;d,&nbsp;the&nbsp;degree&nbsp;is&nbsp;d.<br>
+&nbsp;&nbsp;&nbsp;&nbsp;If&nbsp;it&nbsp;is&nbsp;None,&nbsp;the&nbsp;degree&nbsp;is&nbsp;arbitrary.<br>
+&nbsp;&nbsp;is_connected:&nbsp;Bool.&nbsp;If&nbsp;it&nbsp;is&nbsp;True,&nbsp;the&nbsp;graphs&nbsp;are<br>
+&nbsp;&nbsp;&nbsp;&nbsp;connected.&nbsp;If&nbsp;it&nbsp;is&nbsp;False,&nbsp;the&nbsp;graphs&nbsp;are<br>
+&nbsp;&nbsp;&nbsp;&nbsp;not&nbsp;necessarily&nbsp;connected.<br>
+&nbsp;&nbsp;graphset:&nbsp;Optional.&nbsp;A&nbsp;GraphSet&nbsp;object.&nbsp;Subgraphs&nbsp;to&nbsp;be&nbsp;stored<br>
+&nbsp;&nbsp;&nbsp;&nbsp;are&nbsp;selected&nbsp;from&nbsp;this&nbsp;object.<br>
+&nbsp;<br>
+Returns:<br>
+&nbsp;&nbsp;A&nbsp;new&nbsp;GraphSet&nbsp;object.<br>
+&nbsp;<br>
+See&nbsp;Also:<br>
+&nbsp;&nbsp;<a href="#graphillion.GraphSet-regular_graphs">regular_graphs</a>()<br>
+&nbsp;&nbsp;<a href="#graphillion.GraphSet-bipartite_graphs">bipartite_graphs</a>()</tt></dd></dl>
+
+<dl><dt><a name="GraphSet-regular_graphs"><strong>regular_graphs</strong></a>(degree=None, is_connected=True, graphset=None)</dt><dd><tt>Returns&nbsp;a&nbsp;GraphSet&nbsp;of&nbsp;regular&nbsp;graphs.<br>
+A&nbsp;regular&nbsp;graph&nbsp;is&nbsp;one&nbsp;such&nbsp;that&nbsp;all&nbsp;the&nbsp;degrees&nbsp;of&nbsp;the&nbsp;vertices&nbsp;are&nbsp;the&nbsp;same.<br>
+&nbsp;<br>
+This&nbsp;method&nbsp;can&nbsp;be&nbsp;parallelized&nbsp;with&nbsp;OpenMP&nbsp;by&nbsp;specifying&nbsp;the<br>
+environmental&nbsp;variable&nbsp;`OMP_NUM_THREADS`:<br>
+&nbsp;<br>
+&nbsp;&nbsp;`$&nbsp;OMP_NUM_THREADS=4&nbsp;python&nbsp;your_graphillion_script.py`<br>
+&nbsp;<br>
+Examples:<br>
+&nbsp;&nbsp;&gt;&gt;&gt;&nbsp;GraphSet.<a href="#graphillion.GraphSet-regular_graphs">regular_graphs</a>()<br>
+&nbsp;<br>
+&nbsp;&nbsp;#&nbsp;The&nbsp;degree&nbsp;is&nbsp;3&nbsp;and&nbsp;the&nbsp;graphs&nbsp;are&nbsp;not&nbsp;necessarily&nbsp;connected.<br>
+&nbsp;&nbsp;&gt;&gt;&gt;&nbsp;GraphSet.<a href="#graphillion.GraphSet-regular_graphs">regular_graphs</a>(3,&nbsp;False)<br>
+&nbsp;<br>
+&nbsp;&nbsp;#&nbsp;The&nbsp;degree&nbsp;is&nbsp;at&nbsp;least&nbsp;2&nbsp;and&nbsp;at&nbsp;most&nbsp;5,&nbsp;and<br>
+&nbsp;&nbsp;#&nbsp;the&nbsp;graphs&nbsp;are&nbsp;connected.<br>
+&nbsp;&nbsp;&gt;&gt;&gt;&nbsp;GraphSet.<a href="#graphillion.GraphSet-regular_graphs">regular_graphs</a>((2,&nbsp;5),&nbsp;True)<br>
+&nbsp;<br>
+Args:<br>
+&nbsp;&nbsp;degree:&nbsp;Tuple&nbsp;or&nbsp;Integer.&nbsp;If&nbsp;it&nbsp;is&nbsp;a&nbsp;tuple&nbsp;(l,&nbsp;u),<br>
+&nbsp;&nbsp;&nbsp;&nbsp;the&nbsp;degree&nbsp;is&nbsp;at&nbsp;least&nbsp;l&nbsp;and&nbsp;at&nbsp;most&nbsp;u.<br>
+&nbsp;&nbsp;&nbsp;&nbsp;If&nbsp;it&nbsp;is&nbsp;an&nbsp;integer&nbsp;d,&nbsp;the&nbsp;degree&nbsp;is&nbsp;d.<br>
+&nbsp;&nbsp;&nbsp;&nbsp;If&nbsp;it&nbsp;is&nbsp;None,&nbsp;the&nbsp;degree&nbsp;is&nbsp;arbitrary.<br>
+&nbsp;&nbsp;is_connected:&nbsp;Bool.&nbsp;If&nbsp;it&nbsp;is&nbsp;True,&nbsp;the&nbsp;graphs&nbsp;are<br>
+&nbsp;&nbsp;&nbsp;&nbsp;connected.&nbsp;If&nbsp;it&nbsp;is&nbsp;False,&nbsp;the&nbsp;graphs&nbsp;are<br>
+&nbsp;&nbsp;&nbsp;&nbsp;not&nbsp;necessarily&nbsp;connected.<br>
+&nbsp;&nbsp;graphset:&nbsp;Optional.&nbsp;&nbsp;A&nbsp;GraphSet&nbsp;object.&nbsp;&nbsp;Matchings&nbsp;to&nbsp;be&nbsp;stored<br>
+&nbsp;&nbsp;&nbsp;&nbsp;are&nbsp;selected&nbsp;from&nbsp;this&nbsp;object.<br>
+&nbsp;<br>
+Returns:<br>
+&nbsp;&nbsp;A&nbsp;new&nbsp;GraphSet&nbsp;object.<br>
+&nbsp;<br>
+See&nbsp;Also:<br>
+&nbsp;&nbsp;<a href="#graphillion.GraphSet-graphs">graphs</a>()</tt></dd></dl>
+
+<dl><dt><a name="GraphSet-reliability"><strong>reliability</strong></a>(probabilities, terminals)</dt><dd><tt>Returns&nbsp;the&nbsp;reliability&nbsp;of&nbsp;the&nbsp;graph&nbsp;with&nbsp;edge&nbsp;`probabilities`&nbsp;and&nbsp;`terminals`.<br>
+This&nbsp;method&nbsp;calculates&nbsp;the&nbsp;reliability&nbsp;of&nbsp;the&nbsp;graph&nbsp;with&nbsp;`probabilities`&nbsp;of&nbsp;each&nbsp;edge<br>
+and&nbsp;terminals.<br>
+&nbsp;<br>
+Examples:<br>
+&nbsp;&nbsp;&gt;&gt;&gt;&nbsp;probabilities&nbsp;=&nbsp;{(1,&nbsp;2):&nbsp;0.5,&nbsp;(1,&nbsp;4):&nbsp;0.5}<br>
+&nbsp;&nbsp;&gt;&gt;&gt;&nbsp;terminals&nbsp;=&nbsp;[1,&nbsp;2,&nbsp;3,&nbsp;4,&nbsp;5,&nbsp;6]<br>
+&nbsp;&nbsp;&gt;&gt;&gt;&nbsp;reliability&nbsp;=&nbsp;GraphSet.<a href="#graphillion.GraphSet-reliability">reliability</a>(prob_list,&nbsp;terminals)<br>
+&nbsp;&nbsp;&gt;&gt;&gt;&nbsp;reliability<br>
+&nbsp;&nbsp;0.75<br>
+&nbsp;<br>
+Args:<br>
+&nbsp;&nbsp;probabilities:&nbsp;a&nbsp;dictionary&nbsp;of&nbsp;probabilities&nbsp;of&nbsp;each&nbsp;edge.<br>
+&nbsp;&nbsp;terminals:&nbsp;terminal&nbsp;vertices.<br>
+&nbsp;<br>
+Returns:<br>
+&nbsp;&nbsp;Reliability.<br>
+&nbsp;<br>
+Raises:<br>
+&nbsp;&nbsp;KeyError:&nbsp;If&nbsp;a&nbsp;given&nbsp;edge&nbsp;is&nbsp;not&nbsp;found&nbsp;in&nbsp;the&nbsp;universe.</tt></dd></dl>
+
+<dl><dt><a name="GraphSet-set_universe"><strong>set_universe</strong></a>(universe, traversal='greedy', source=None)</dt><dd><tt>Registers&nbsp;the&nbsp;new&nbsp;universe.<br>
+&nbsp;<br>
+Examples:<br>
+&nbsp;&nbsp;&gt;&gt;&gt;&nbsp;GraphSet.<a href="#graphillion.GraphSet-set_universe">set_universe</a>([(1,&nbsp;2,&nbsp;2.0),&nbsp;(1,&nbsp;4,&nbsp;-3.0),&nbsp;(2,&nbsp;3)])<br>
+&nbsp;<br>
+Args:<br>
+&nbsp;&nbsp;universe:&nbsp;A&nbsp;list&nbsp;of&nbsp;edges&nbsp;that&nbsp;represents&nbsp;the&nbsp;new&nbsp;universe.<br>
+&nbsp;&nbsp;&nbsp;&nbsp;An&nbsp;edge&nbsp;may&nbsp;come&nbsp;along&nbsp;with&nbsp;an&nbsp;edge&nbsp;weight,&nbsp;which&nbsp;can&nbsp;be<br>
+&nbsp;&nbsp;&nbsp;&nbsp;positive&nbsp;as&nbsp;well&nbsp;as&nbsp;negative&nbsp;(or&nbsp;1.0&nbsp;if&nbsp;not&nbsp;specified).<br>
+&nbsp;<br>
+&nbsp;&nbsp;traversal:&nbsp;Optional.&nbsp;&nbsp;This&nbsp;argument&nbsp;specifies&nbsp;the&nbsp;order&nbsp;of<br>
+&nbsp;&nbsp;&nbsp;&nbsp;edges&nbsp;to&nbsp;be&nbsp;processed&nbsp;in&nbsp;the&nbsp;internal&nbsp;graphset&nbsp;operations.<br>
+&nbsp;&nbsp;&nbsp;&nbsp;The&nbsp;default&nbsp;is&nbsp;'greedy',&nbsp;best-first&nbsp;search&nbsp;from&nbsp;`source`<br>
+&nbsp;&nbsp;&nbsp;&nbsp;with&nbsp;respect&nbsp;to&nbsp;the&nbsp;number&nbsp;of&nbsp;unused&nbsp;incident&nbsp;edges.<br>
+&nbsp;&nbsp;&nbsp;&nbsp;Other&nbsp;options&nbsp;include&nbsp;'bfs',&nbsp;the&nbsp;breadth-first&nbsp;search,&nbsp;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;'dfs',&nbsp;the&nbsp;depth-first&nbsp;search,&nbsp;and&nbsp;'as-is',&nbsp;the&nbsp;order&nbsp;of<br>
+&nbsp;&nbsp;&nbsp;&nbsp;`universe`&nbsp;list.<br>
+&nbsp;<br>
+&nbsp;&nbsp;source:&nbsp;Optional.&nbsp;&nbsp;This&nbsp;argument&nbsp;specifies&nbsp;the&nbsp;starting<br>
+&nbsp;&nbsp;&nbsp;&nbsp;point&nbsp;of&nbsp;the&nbsp;edge&nbsp;traversal.<br>
+&nbsp;<br>
+See&nbsp;Also:<br>
+&nbsp;&nbsp;<a href="#graphillion.GraphSet-universe">universe</a>()</tt></dd></dl>
+
+<dl><dt><a name="GraphSet-show_messages"><strong>show_messages</strong></a>(flag=True)</dt><dd><tt>Enables/disables&nbsp;status&nbsp;messages.<br>
+&nbsp;<br>
+Args:<br>
+&nbsp;&nbsp;flag:&nbsp;Optional.&nbsp;&nbsp;True&nbsp;or&nbsp;False.&nbsp;&nbsp;If&nbsp;True,&nbsp;status&nbsp;messages&nbsp;are<br>
+&nbsp;&nbsp;enabled.&nbsp;&nbsp;If&nbsp;False,&nbsp;they&nbsp;are&nbsp;disabled&nbsp;(initial&nbsp;setting).<br>
+&nbsp;<br>
+Returns:<br>
+&nbsp;&nbsp;The&nbsp;setting&nbsp;before&nbsp;the&nbsp;method&nbsp;call.&nbsp;&nbsp;True&nbsp;(enabled)&nbsp;or<br>
+&nbsp;&nbsp;False&nbsp;(disabled).</tt></dd></dl>
+
+<dl><dt><a name="GraphSet-steiner_cycles"><strong>steiner_cycles</strong></a>(terminals, graphset=None)</dt><dd><tt>Returns&nbsp;a&nbsp;GraphSet&nbsp;of&nbsp;Steiner&nbsp;cycles.<br>
+&nbsp;&nbsp;A&nbsp;Steiner&nbsp;cycle&nbsp;is&nbsp;a&nbsp;cycle&nbsp;that&nbsp;contains&nbsp;all&nbsp;vertices&nbsp;in&nbsp;"terminals".<br>
+&nbsp;<br>
+Example:<br>
+&nbsp;&nbsp;&gt;&gt;&gt;&nbsp;GraphSet.<a href="#graphillion.GraphSet-steiner_cycles">steiner_cycles</a>([1,&nbsp;2,&nbsp;3])<br>
+&nbsp;<br>
+Args:<br>
+&nbsp;&nbsp;terminals:&nbsp;A&nbsp;list&nbsp;of&nbsp;vertices&nbsp;to&nbsp;be&nbsp;connected.<br>
+&nbsp;&nbsp;graphset:&nbsp;Optional.&nbsp;A&nbsp;GraphSet&nbsp;object.&nbsp;Subgraphs&nbsp;to&nbsp;be&nbsp;stored<br>
+&nbsp;&nbsp;&nbsp;&nbsp;are&nbsp;selected&nbsp;from&nbsp;this&nbsp;object.<br>
+&nbsp;<br>
+Returns:<br>
+&nbsp;&nbsp;A&nbsp;new&nbsp;GraphSet&nbsp;object.</tt></dd></dl>
+
+<dl><dt><a name="GraphSet-steiner_paths"><strong>steiner_paths</strong></a>(terminals, graphset=None)</dt><dd><tt>Returns&nbsp;a&nbsp;GraphSet&nbsp;of&nbsp;Steiner&nbsp;paths.<br>
+&nbsp;&nbsp;A&nbsp;Steiner&nbsp;path&nbsp;is&nbsp;a&nbsp;path&nbsp;that&nbsp;contains&nbsp;all&nbsp;vertices&nbsp;in&nbsp;"terminals".<br>
+&nbsp;<br>
+Example:<br>
+&nbsp;&nbsp;&gt;&gt;&gt;&nbsp;GraphSet.<a href="#graphillion.GraphSet-steiner_paths">steiner_paths</a>([1,&nbsp;2,&nbsp;3])<br>
+&nbsp;<br>
+Args:<br>
+&nbsp;&nbsp;terminals:&nbsp;A&nbsp;list&nbsp;of&nbsp;vertices&nbsp;to&nbsp;be&nbsp;connected.<br>
+&nbsp;&nbsp;graphset:&nbsp;Optional.&nbsp;A&nbsp;GraphSet&nbsp;object.&nbsp;Subgraphs&nbsp;to&nbsp;be&nbsp;stored<br>
+&nbsp;&nbsp;&nbsp;&nbsp;are&nbsp;selected&nbsp;from&nbsp;this&nbsp;object.<br>
+&nbsp;<br>
+Returns:<br>
+&nbsp;&nbsp;A&nbsp;new&nbsp;GraphSet&nbsp;object.</tt></dd></dl>
+
+<dl><dt><a name="GraphSet-steiner_subgraphs"><strong>steiner_subgraphs</strong></a>(terminals, graphset=None)</dt><dd><tt>Returns&nbsp;a&nbsp;GraphSet&nbsp;of&nbsp;Steiner&nbsp;subgraphs.<br>
+&nbsp;&nbsp;A&nbsp;Steiner&nbsp;subgraph&nbsp;is&nbsp;a&nbsp;subgraph&nbsp;that&nbsp;contains&nbsp;all&nbsp;vertices&nbsp;in&nbsp;"terminals".<br>
+&nbsp;<br>
+Example:<br>
+&nbsp;&nbsp;&gt;&gt;&gt;&nbsp;GraphSet.<a href="#graphillion.GraphSet-steiner_subgraphs">steiner_subgraphs</a>([1,&nbsp;2,&nbsp;3])<br>
+&nbsp;<br>
+Args:<br>
+&nbsp;&nbsp;terminals:&nbsp;A&nbsp;list&nbsp;of&nbsp;vertices&nbsp;to&nbsp;be&nbsp;connected.<br>
+&nbsp;&nbsp;graphset:&nbsp;Optional.&nbsp;A&nbsp;GraphSet&nbsp;object.&nbsp;Subgraphs&nbsp;to&nbsp;be&nbsp;stored<br>
+&nbsp;&nbsp;&nbsp;&nbsp;are&nbsp;selected&nbsp;from&nbsp;this&nbsp;object.<br>
+&nbsp;<br>
+Returns:<br>
+&nbsp;&nbsp;A&nbsp;new&nbsp;GraphSet&nbsp;object.</tt></dd></dl>
+
+<dl><dt><a name="GraphSet-steiner_trees"><strong>steiner_trees</strong></a>(terminals, graphset=None)</dt><dd><tt>Returns&nbsp;a&nbsp;GraphSet&nbsp;of&nbsp;Steiner&nbsp;trees.<br>
+&nbsp;&nbsp;A&nbsp;Steiner&nbsp;tree&nbsp;is&nbsp;a&nbsp;tree&nbsp;that&nbsp;contains&nbsp;all&nbsp;vertices&nbsp;in&nbsp;"terminals".<br>
+&nbsp;<br>
+Example:<br>
+&nbsp;&nbsp;&gt;&gt;&gt;&nbsp;GraphSet.<a href="#graphillion.GraphSet-steiner_trees">steiner_trees</a>([1,&nbsp;2,&nbsp;3])<br>
+&nbsp;<br>
+Args:<br>
+&nbsp;&nbsp;terminals:&nbsp;A&nbsp;list&nbsp;of&nbsp;vertices&nbsp;to&nbsp;be&nbsp;connected.<br>
+&nbsp;&nbsp;graphset:&nbsp;Optional.&nbsp;A&nbsp;GraphSet&nbsp;object.&nbsp;Subgraphs&nbsp;to&nbsp;be&nbsp;stored<br>
+&nbsp;&nbsp;&nbsp;&nbsp;are&nbsp;selected&nbsp;from&nbsp;this&nbsp;object.<br>
+&nbsp;<br>
+Returns:<br>
+&nbsp;&nbsp;A&nbsp;new&nbsp;GraphSet&nbsp;object.</tt></dd></dl>
+
+<dl><dt><a name="GraphSet-trees"><strong>trees</strong></a>(root=None, is_spanning=False, graphset=None)</dt><dd><tt>Returns&nbsp;a&nbsp;GraphSet&nbsp;of&nbsp;trees.<br>
+&nbsp;<br>
+This&nbsp;method&nbsp;can&nbsp;be&nbsp;parallelized&nbsp;with&nbsp;OpenMP&nbsp;by&nbsp;specifying&nbsp;the<br>
+environmental&nbsp;variable&nbsp;`OMP_NUM_THREADS`:<br>
+&nbsp;<br>
+&nbsp;&nbsp;`$&nbsp;OMP_NUM_THREADS=4&nbsp;python&nbsp;your_graphillion_script.py`<br>
+&nbsp;<br>
+Examples:<br>
+&nbsp;&nbsp;&gt;&gt;&gt;&nbsp;GraphSet.<a href="#graphillion.GraphSet-trees">trees</a>(1,&nbsp;is_spanning=True)<br>
+&nbsp;&nbsp;GraphSet([[(1,&nbsp;2),&nbsp;(1,&nbsp;4),&nbsp;(2,&nbsp;3),&nbsp;(2,&nbsp;5),&nbsp;(3,&nbsp;6)],&nbsp;[(1,&nbsp;2),&nbsp;(1,&nbsp;4),&nbsp;(2,&nbsp;3),&nbsp;...<br>
+&nbsp;<br>
+Args:<br>
+&nbsp;&nbsp;root:&nbsp;&nbsp;Optional.&nbsp;&nbsp;A&nbsp;vertex,&nbsp;at&nbsp;which&nbsp;trees&nbsp;are&nbsp;rooted.<br>
+&nbsp;<br>
+&nbsp;&nbsp;is_spanning:&nbsp;Optional.&nbsp;&nbsp;True&nbsp;or&nbsp;False.&nbsp;&nbsp;If&nbsp;true,&nbsp;trees&nbsp;must<br>
+&nbsp;&nbsp;&nbsp;&nbsp;be&nbsp;composed&nbsp;of&nbsp;all&nbsp;vertices.<br>
+&nbsp;<br>
+&nbsp;&nbsp;graphset:&nbsp;Optional.&nbsp;&nbsp;A&nbsp;GraphSet&nbsp;object.&nbsp;&nbsp;Trees&nbsp;to&nbsp;be&nbsp;stored<br>
+&nbsp;&nbsp;&nbsp;&nbsp;are&nbsp;selected&nbsp;from&nbsp;this&nbsp;object.<br>
+&nbsp;<br>
+Returns:<br>
+&nbsp;&nbsp;A&nbsp;new&nbsp;GraphSet&nbsp;object.<br>
+&nbsp;<br>
+See&nbsp;Also:<br>
+&nbsp;&nbsp;<a href="#graphillion.GraphSet-graphs">graphs</a>()</tt></dd></dl>
+
+<dl><dt><a name="GraphSet-universe"><strong>universe</strong></a>()</dt><dd><tt>Returns&nbsp;the&nbsp;current&nbsp;universe.<br>
+&nbsp;<br>
+The&nbsp;list&nbsp;of&nbsp;edges&nbsp;that&nbsp;represents&nbsp;the&nbsp;current&nbsp;universe&nbsp;is<br>
+returned.<br>
+&nbsp;<br>
+Examples:<br>
+&nbsp;&nbsp;&gt;&gt;&gt;&nbsp;GraphSet.<a href="#graphillion.GraphSet-universe">universe</a>()<br>
+&nbsp;&nbsp;[(1,&nbsp;2,&nbsp;2.0),&nbsp;(1,&nbsp;4,&nbsp;-3.0),&nbsp;(2,&nbsp;3)]<br>
+&nbsp;<br>
+Returns:<br>
+&nbsp;&nbsp;The&nbsp;universe&nbsp;if&nbsp;no&nbsp;argument&nbsp;is&nbsp;given,&nbsp;or&nbsp;None&nbsp;otherwise.<br>
+&nbsp;<br>
+See&nbsp;Also:<br>
+&nbsp;&nbsp;<a href="#graphillion.GraphSet-set_universe">set_universe</a>()</tt></dd></dl>
+
+<dl><dt><a name="GraphSet-weighted_induced_graphs"><strong>weighted_induced_graphs</strong></a>(weight_list=None, lower=0, upper=2147483647)</dt><dd><tt>Return&nbsp;a&nbsp;GraphSet&nbsp;with&nbsp;weighted&nbsp;connected&nbsp;induced&nbsp;graphs.<br>
+&nbsp;<br>
+Examples:&nbsp;weighted&nbsp;connected&nbsp;induced&nbsp;graphs<br>
+&nbsp;&nbsp;&gt;&gt;&gt;&nbsp;wl&nbsp;=&nbsp;{}<br>
+&nbsp;&nbsp;&gt;&gt;&gt;&nbsp;for&nbsp;v&nbsp;in&nbsp;range(1,&nbsp;7):<br>
+&nbsp;&nbsp;&gt;&gt;&gt;&nbsp;&nbsp;&nbsp;wl[v]&nbsp;=&nbsp;v<br>
+&nbsp;&nbsp;&gt;&gt;&gt;&nbsp;gs&nbsp;=&nbsp;GraphSet.<a href="#graphillion.GraphSet-weighted_induced_graphs">weighted_induced_graphs</a>(weight_list=wl,&nbsp;lower=10,&nbsp;upper=17)<br>
+&nbsp;&nbsp;GraphSet([[(5,&nbsp;6)],&nbsp;[(1,&nbsp;4),&nbsp;(4,&nbsp;5)],&nbsp;[(2,&nbsp;5),&nbsp;(4,&nbsp;5)],&nbsp;[(2,&nbsp;3),&nbsp;(2,&nbsp;5)],&nbsp;[(&nbsp;...<br>
+&nbsp;<br>
+Args:<br>
+&nbsp;&nbsp;weight_list:&nbsp;Optional.&nbsp;A&nbsp;list&nbsp;of&nbsp;int.&nbsp;Vertex&nbsp;weights.&nbsp;default&nbsp;weight&nbsp;is&nbsp;1.<br>
+&nbsp;&nbsp;lower:&nbsp;Optional.&nbsp;int.&nbsp;the&nbsp;lower&nbsp;bound&nbsp;of&nbsp;the&nbsp;sum&nbsp;of&nbsp;vertex&nbsp;weights<br>
+&nbsp;&nbsp;&nbsp;&nbsp;in&nbsp;each&nbsp;connected&nbsp;component.&nbsp;(including)<br>
+&nbsp;&nbsp;upper:&nbsp;Optional.&nbsp;int.&nbsp;the&nbsp;upper&nbsp;bound&nbsp;of&nbsp;the&nbsp;sum&nbsp;of&nbsp;vertex&nbsp;weights<br>
+&nbsp;&nbsp;&nbsp;&nbsp;in&nbsp;each&nbsp;connected&nbsp;component.&nbsp;(including)<br>
+&nbsp;<br>
+Returns:<br>
+&nbsp;&nbsp;A&nbsp;new&nbsp;GraphSet&nbsp;Object.</tt></dd></dl>
+
+<hr>
+Data descriptors defined here:<br>
+<dl><dt><strong>__dict__</strong></dt>
+<dd><tt>dictionary&nbsp;for&nbsp;instance&nbsp;variables&nbsp;(if&nbsp;defined)</tt></dd>
+</dl>
+<dl><dt><strong>__weakref__</strong></dt>
+<dd><tt>list&nbsp;of&nbsp;weak&nbsp;references&nbsp;to&nbsp;the&nbsp;object&nbsp;(if&nbsp;defined)</tt></dd>
+</dl>
+<hr>
+Data and other attributes defined here:<br>
+<dl><dt><strong>DegreeDistribution_Any</strong> = -1</dl>
+
+<dl><dt><strong>__hash__</strong> = None</dl>
+
+<dl><dt><strong>converters</strong> = {'to_edges': &lt;function GraphSet.&lt;lambda&gt;&gt;, 'to_graph': &lt;function GraphSet.&lt;lambda&gt;&gt;}</dl>
+
+</td></tr></table>
+</body></html>
