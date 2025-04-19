@@ -220,10 +220,13 @@ class DpJspSolver2(DpSolver, WarmstartMixin):
                 precedence_by_index[ind].add(ind_pred)
 
         task = model.add_object_type(number=self.problem.n_all_jobs)
-        # done = model.add_set_var(object_type=task, target=set())
-        undone = model.add_set_var(
-            object_type=task, target=range(self.problem.n_all_jobs)
-        )
+
+        # 簡単化のためサブタスクの数はすべてのジョブで同じとする
+        n_subjob = len(self.problem.list_jobs[0])
+        for job in self.problem.list_jobs:
+            assert len(job) == n_subjob
+        subtask = model.add_object_type(number=n_subjob + 1)
+
         cur_time_per_machine = [
             model.add_int_resource_var(target=0, less_is_better=True)
             for m in range(self.problem.n_machines)
@@ -233,19 +236,15 @@ class DpJspSolver2(DpSolver, WarmstartMixin):
             for m in range(self.problem.n_jobs)
         ]
 
-        # dp[U][t][m1][m2]...[j1][j2]... := 未処理のタスク集合U, ジョブの最遅終了時刻t, M1 の終了時刻がm1, ..., ジョブ1の終了時刻がj1, ... のときのmakespan の最小値
-        # dp[U,t,m1,..., j1,...] =
-        #   min_{J_i_j \in U, J_i_{j-1} \not\in U}(
-        #       t' - t + dp[U \ J_i_j, t', m1, ..., m_p + C_{i,j}, ..., j1, ..., j_j + C_{i,j}, ...)
-        #   )
-        #   where
-        #       p = machine[i][j]
-        #       t' = max(t, m_p + C_{i,j}, j_j + C_{i,j})
+        next_task_per_job = [
+            model.add_element_var(object_type=subtask, target=0)
+            for m in range(self.problem.n_jobs)
+        ]
 
         # dp[l1][l2]...[t][m1][m2]...[j1][j2]... := ジョブ1 の次のタスクがl1,..., ジョブの最遅終了時刻t, M1 の終了時刻がm1, ..., ジョブ1の終了時刻がj1, ... のときのmakespan の最小値
-        # dp[U,t,m1,..., j1,...] =
-        #   min_{J_i_j \in U, J_i_{j-1} \not\in U}(
-        #       t' - t + dp[U \ J_i_j, t', m1, ..., m_p + C_{i,j}, ..., j1, ..., j_j + C_{i,j}, ...)
+        # dp[l1,...,t,m1,..., j1,...] =
+        #   min_{J_{i,j} | l_i == j }(
+        #       t' - t + dp[..., l_i+1, ..., t', m1, ..., m_p + C_{i,j}, ..., j1, ..., j_j + C_{i,j}, ...)
         #   )
         #   where
         #       p = machine[i][j]
@@ -259,16 +258,22 @@ class DpJspSolver2(DpSolver, WarmstartMixin):
 
         finish = model.add_int_var(0)
         cur_time_total = model.add_int_resource_var(target=0, less_is_better=True)
-        model.add_base_case([finish == 1, undone.is_empty()])
+        model.add_base_case(
+            [
+                finish == 1,
+                sum(next_task_per_job) == self.problem.n_jobs * n_subjob,
+            ]
+        )
         self.transitions = {}
         for i in range(len(jobs)):
             m = machines[i]
             dur = durations[i]
             jid = job_id[i]
+            subjob_id = jobs[i][1]
+
             sched = dp.Transition(
                 name=f"sched_{i}",
-                cost=(  # dp.max(cur_time_per_machine[m]-cur_time_per_job[jid],
-                    #        -cur_time_per_machine[m]+cur_time_per_job[jid])
+                cost=(
                     dp.max(
                         cur_time_total,
                         dp.max(
@@ -278,10 +283,8 @@ class DpJspSolver2(DpSolver, WarmstartMixin):
                     - cur_time_total
                 )
                 + dp.IntExpr.state_cost(),
-                # cost=dp.IntExpr.state_cost(),
                 effects=[
-                    # (done, done.add(i)),
-                    (undone, undone.remove(i)),
+                    (next_task_per_job[jid], next_task_per_job[jid] + 1),
                     (
                         cur_time_per_job[jid],
                         dp.max(
@@ -305,19 +308,18 @@ class DpJspSolver2(DpSolver, WarmstartMixin):
                         ),
                     ),
                 ],
-                preconditions=[
-                    undone.contains(i),
-                ]
-                + [~undone.contains(j) for j in precedence_by_index[i]],
+                preconditions=[next_task_per_job[jid] == subjob_id],
             )
             model.add_transition(sched)
             self.transitions[i] = sched
         finish_transition = dp.Transition(
             name="finish_",
             effects=[(finish, 1)],
-            # cost=cur_time_total+dp.IntExpr.state_cost(),
             cost=dp.IntExpr.state_cost(),
-            preconditions=[finish == 0, undone.is_empty()],
+            preconditions=[
+                finish == 0,
+                sum(next_task_per_job) == self.problem.n_jobs * n_subjob,
+            ],
         )
         model.add_transition(finish_transition)
         self.transitions["finish"] = finish_transition
@@ -331,6 +333,9 @@ class DpJspSolver2(DpSolver, WarmstartMixin):
         self.cur_time_per_job = cur_time_per_job
 
     def retrieve_solution(self, sol: dp.Solution) -> Solution:
+        if sol.cost is None:
+            raise RuntimeError("Solution not found.")
+
         def extract_ints(word):
             return tuple(int(num) for num in re.findall(r"\d+", word))
 
