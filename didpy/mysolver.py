@@ -44,17 +44,15 @@ class DpJspSolver(DpSolver, WarmstartMixin):
                 precedence_by_index[ind].add(ind_pred)
 
         task = model.add_object_type(number=self.problem.n_all_jobs)
-        # done = model.add_set_var(object_type=task, target=set())
+        done = model.add_set_var(object_type=task, target=set())
         undone = model.add_set_var(
             object_type=task, target=range(self.problem.n_all_jobs)
         )
         cur_time_per_machine = [
-            model.add_int_resource_var(target=0, less_is_better=True)
-            for m in range(self.problem.n_machines)
+            model.add_int_var(target=0) for m in range(self.problem.n_machines)
         ]
         cur_time_per_job = [
-            model.add_int_resource_var(target=0, less_is_better=True)
-            for m in range(self.problem.n_jobs)
+            model.add_int_var(target=0) for m in range(self.problem.n_jobs)
         ]
 
         # dp[U][t][m1][m2]...[j1][j2]... := 未処理のタスク集合U, ジョブの最遅終了時刻t, M1 の終了時刻がm1, ..., ジョブ1の終了時刻がj1, ... のときのmakespan の最小値
@@ -91,7 +89,7 @@ class DpJspSolver(DpSolver, WarmstartMixin):
                 + dp.IntExpr.state_cost(),
                 # cost=dp.IntExpr.state_cost(),
                 effects=[
-                    # (done, done.add(i)),
+                    (done, done.add(i)),
                     (undone, undone.remove(i)),
                     (
                         cur_time_per_job[jid],
@@ -119,19 +117,19 @@ class DpJspSolver(DpSolver, WarmstartMixin):
                 preconditions=[
                     undone.contains(i),
                 ]
-                + [~undone.contains(j) for j in precedence_by_index[i]],
+                + [done.contains(j) for j in precedence_by_index[i]],
             )
             model.add_transition(sched)
             self.transitions[i] = sched
-        finish_transition = dp.Transition(
+        finish = dp.Transition(
             name="finish_",
             effects=[(finish, 1)],
             # cost=cur_time_total+dp.IntExpr.state_cost(),
             cost=dp.IntExpr.state_cost(),
-            preconditions=[finish == 0, undone.is_empty()],
+            preconditions=[done.len() == self.problem.n_all_jobs],
         )
-        model.add_transition(finish_transition)
-        self.transitions["finish"] = finish_transition
+        model.add_transition(finish)
+        self.transitions["finish"] = finish
         self.jobs = jobs
         self.prec = precedence_by_index
         self.index = index
