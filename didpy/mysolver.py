@@ -265,8 +265,20 @@ class DpJspSolver2(DpSolver, WarmstartMixin):
         #       j'_j = end
         #       t' = max(t, end)
 
+        def reduction_max(exprs):
+            l = 1
+            n = len(exprs)
+            while l < n:
+                for i in range(0, n, l * 2):
+                    if i + l < n:
+                        exprs[i] = dp.max(exprs[i], exprs[i + l])
+                l *= 2
+            return exprs[0]
+
         finish = model.add_int_var(0)
         cur_time_total = model.add_int_resource_var(target=0, less_is_better=True)
+        # cur_time_total = reduction_max(cur_time_per_job + cur_time_per_machine)
+
         model.add_base_case([finish == 1])
         self.transitions = {}
         for i in range(len(jobs)):
@@ -311,14 +323,9 @@ class DpJspSolver2(DpSolver, WarmstartMixin):
                 expr = dp.max(expr, job_bounds[jid][next_task_per_job[jid]])
             model.add_dual_bound(expr)
         else:  # faster 7 secs
-            l = 1
             exprs = [job_bounds[jid][next_task_per_job[jid]] for jid in range(n_jobs)]
-            while l < n_jobs:
-                for jid in range(0, n_jobs, l * 2):
-                    if jid + l < n_jobs:
-                        exprs[jid] = dp.max(exprs[jid], exprs[jid + l])
-                l *= 2
-            model.add_dual_bound(exprs[0])
+            expr = reduction_max(exprs)
+            model.add_dual_bound(expr)
 
         self.transitions["finish"] = finish_transition
         self.jobs = jobs
