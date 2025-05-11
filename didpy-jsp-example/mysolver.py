@@ -261,6 +261,7 @@ class DpJspSolver2(DpSolver, WarmstartMixin):
         #   where
         #       p = machine[i][j]
         #       end = max(m_p + C_{i,j}, j_j + C_{i,j})
+        #       t = max([m1, m2, ..., j1, j2])
         #       m'_p = end
         #       j'_j = end
         #       t' = max(t, end)
@@ -294,7 +295,7 @@ class DpJspSolver2(DpSolver, WarmstartMixin):
 
             sched = dp.Transition(
                 name=f"sched_{i}",
-                cost=nt - cur_time_total + dp.IntExpr.state_cost(),
+                cost=dp.max(nt, dp.IntExpr.state_cost()),
                 effects=[
                     (next_task_per_job[jid], next_task_per_job[jid] + 1),
                     (cur_time_per_job[jid], end_time),
